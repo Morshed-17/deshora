@@ -1,9 +1,13 @@
 const errorHandlerMiddleware = async (err, req, res, next) => {
   if (!res.statusCode || res.statusCode === 200) {
-    res.status(500);
+    return res.status(500).json({
+      error: "Internal server Error",
+      message: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
   }
+
   res.json({
-    error: "Internal server Error",
     message: err.message,
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
