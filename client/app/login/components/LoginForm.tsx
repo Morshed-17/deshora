@@ -1,9 +1,80 @@
-import React from 'react'
+"use client";
+import { loginUserSchema } from "@/schema/authSchema";
+import React from "react";
+
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import CustomInput from "@/components/ui/custom-input";
+
+type FormData = z.infer<typeof loginUserSchema>;
 
 function LoginForm() {
+  const form = useForm<z.infer<typeof loginUserSchema>>({
+    resolver: zodResolver(loginUserSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: FormData) => {
+    console.log(values);
+  };
+
   return (
-    <div>LoginForm</div>
-  )
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <CustomInput
+                  type="email"
+                  {...field}
+                  placeholder="Enter Your Email"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <CustomInput
+                  type="password"
+                  {...field}
+                  placeholder="Enter A Password"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button className="w-full h-12 rounded-md text-base uppercase" variant={"secondary"} type="submit">
+          Login Now
+        </Button>
+      </form>
+    </Form>
+  );
 }
 
-export default LoginForm
+export default LoginForm;

@@ -13,3 +13,8 @@ export const registerUserSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"], // Show error on the confirmPassword field
   });
+
+export const loginUserSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string(),
+});

@@ -18,9 +18,9 @@ function LoginPage() {
           <button
             onClick={() => setToggle("login")}
             className={cn(
-              "py-2 px-2   font-medium text-gray-800 text-sm cursor-pointer border-b-2 border-transparent flex-1",
+              "py-2 px-2   font-medium text-foreground text-sm cursor-pointer border-b-2 border-transparent flex-1",
               isLogin &&
-                "border-b-2 border-secondary text-secondary focus:outline-none"
+                "border-b-2 border-primary text-primary focus:outline-none"
             )}
           >
             Login
@@ -29,9 +29,9 @@ function LoginPage() {
           <button
             onClick={() => setToggle("register")}
             className={cn(
-              "py-2 px-2   font-medium text-gray-800 text-sm cursor-pointer border-b-2 border-transparent flex-1",
+              "py-2 px-2   font-medium text-foreground text-sm cursor-pointer border-b-2 border-transparent flex-1",
               isRegister &&
-                "border-b-2 border-secondary text-secondary focus:outline-none"
+                "border-b-2 border-primary text-primary focus:outline-none"
             )}
           >
             Registration

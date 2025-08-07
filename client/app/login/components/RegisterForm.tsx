@@ -44,7 +44,7 @@ function RegisterForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <CustomInput {...field} placeholder="Enter Your Name"/>
+                <CustomInput {...field} placeholder="Enter Your Name" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -56,7 +56,11 @@ function RegisterForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <CustomInput type="email" {...field} placeholder="Enter Your Email"/>
+                <CustomInput
+                  type="email"
+                  {...field}
+                  placeholder="Enter Your Email"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -68,7 +72,11 @@ function RegisterForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <CustomInput type="password" {...field} placeholder="Enter A Password"/>
+                <CustomInput
+                  type="password"
+                  {...field}
+                  placeholder="Enter A Password"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,13 +88,23 @@ function RegisterForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <CustomInput type="password" {...field} placeholder="Enter Confirm-Password"/>
+                <CustomInput
+                  type="password"
+                  {...field}
+                  placeholder="Enter Confirm-Password"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full h-12 rounded-md text-base" type="submit">Create An Account</Button>
+        <Button
+          className="w-full h-12 rounded-md text-base uppercase"
+          type="submit"
+          variant={"secondary"}
+        >
+          Create An Account
+        </Button>
       </form>
     </Form>
   );

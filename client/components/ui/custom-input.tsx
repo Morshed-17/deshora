@@ -9,9 +9,9 @@ function CustomInput({
   ...props
 }: React.ComponentProps<"input">) {
   return (
-    <Input
+    <input
       className={cn(
-        "text-base px-5 h-12 border focus-visible:ring-0 rounded-sm border-primary/30 placeholder:font-medium placeholder:text-primary/60 placeholder:text-base",
+        "text-base px-5 h-12 border rounded-sm  border-secondary/60 placeholder:font-medium placeholder:text-secondary/40 placeholder:text-base font-medium ",
         className
       )}
       type={type}
