@@ -1,21 +1,18 @@
 import AppError from "../../errors/AppError";
+import User from "./user.model";
 import Test from "./user.model";
 import httpStatus from "http-status";
 
-
-
-const getTests = async () => {
-  //   if you are using a database, you would typically query the database here
-  // For example, if using Mongoose: return Test.find();
-  const tests = await Test.tests;
-  if (!tests) {
-    throw new AppError(httpStatus.NOT_FOUND, "No tests found");
+const getMe = async (userId: string) => {
+  const result = await User.findById(userId);
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, "No user found");
   }
-  return tests;
+  return result;
 };
 
-const TestService = {
-  getTests,
+const UserService = {
+  getMe,
 };
 
-export default TestService;
+export default UserService;

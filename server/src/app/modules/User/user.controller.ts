@@ -4,22 +4,20 @@ import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/asyncCatch";
 import TestService from "./user.service";
 
-const getTests: RequestHandler = catchAsync(
+const getMe: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    
-    const result = await TestService.getTests();
+    const result = await TestService.getMe(req.user.userId);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Tests fetched successfully!",
+      message: "User is retrived successfully!",
       data: result,
     });
   }
 );
 
-
-const TestController = {
-  getTests,
+const UserController = {
+  getMe,
 };
 
-export default TestController;
+export default UserController;
