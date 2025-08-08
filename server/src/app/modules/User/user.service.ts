@@ -1,5 +1,5 @@
 import AppError from "../../errors/AppError";
-import Test from "./test.model";
+import Test from "./user.model";
 import httpStatus from "http-status";
 
 
