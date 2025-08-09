@@ -42,6 +42,10 @@ const auth = (...requireRoles: TUserRole[]) => {
 
     // Check roles based auth to protect routes
 
+    if (requireRoles.length === 0) {
+      return next();
+    }
+
     if (requireRoles && !requireRoles.includes(role)) {
       throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized");
     }
@@ -51,4 +55,4 @@ const auth = (...requireRoles: TUserRole[]) => {
   });
 };
 
-export default auth
+export default auth;
