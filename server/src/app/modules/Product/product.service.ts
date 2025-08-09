@@ -4,13 +4,29 @@ import { TProduct } from "./prodcut.interface";
 import httpStatus from "http-status";
 import Product from "./product.model";
 import { getImageHash } from "../../utils/getImageHash";
-const allowedImageTypes = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-];
+import { ALLOWED_IMAGE_TYPES } from "../../constants";
+import QueryBuilder from "../../builder/QueryBuilder";
+
+const getAllProducts = async (query: any) => {
+  // Initialize QueryBuilder
+  const queryBuilder = new QueryBuilder(Product.find(), query);
+
+  // Build Query
+  const products = await queryBuilder
+    .search(["name", "description"]) // Searchable fields
+    .filter() // Filterable fields
+    .sort() // Sorting
+    .paginate() // Pagination
+    .fields().modelQuery; // Select specific fields
+
+  // Count Metadata
+  const meta = await queryBuilder.countTotal();
+
+  return {
+    products,
+    meta,
+  };
+};
 
 const createProduct = async (
   productData: TProduct,
@@ -29,7 +45,7 @@ const createProduct = async (
   }
 
   const file = files.featuredImage[0];
-  if (!allowedImageTypes.includes(file.mimetype)) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       `Invalid file type for featured image: ${files.featuredImage[0].mimetype}`
@@ -38,7 +54,7 @@ const createProduct = async (
 
   if (files.galleryImages && files.galleryImages.length > 0) {
     files.galleryImages.forEach((file) => {
-      if (!allowedImageTypes.includes(file.mimetype)) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
         throw new AppError(
           httpStatus.BAD_REQUEST,
           `Invalid file type for featured image: ${file.mimetype}`
@@ -87,8 +103,7 @@ const createProduct = async (
   return result;
 };
 
-const ProductService = {
+export const ProductService = {
   createProduct,
+  getAllProducts,
 };
-
-export default ProductService;
