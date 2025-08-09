@@ -10,7 +10,7 @@ const getMe: RequestHandler = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "User is retrived successfully!",
+      message: "User is retrieved successfully!",
       data: result,
     });
   }

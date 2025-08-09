@@ -12,7 +12,7 @@ const createProduct: RequestHandler = catchAsync(
     };
     const result = await ProductService.createProduct(req.body, files);
     sendResponse(res, {
-      statusCode: httpStatus.OK,
+      statusCode: httpStatus.CREATED,
       success: true,
       message: "Product created successfully!",
       data: result,
