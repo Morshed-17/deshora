@@ -1,12 +1,27 @@
 // category model
 import { model, Schema } from "mongoose";
 import { TCategory } from "./category.interface";
+import slugify from "slugify";
 
 const categorySchema = new Schema<TCategory>(
   {
     title: {
       type: String,
       required: true,
+    },
+    slug: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    parent: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
+    isNested: {
+      type: Boolean,
+      default: false,
     },
     description: {
       type: String,
@@ -17,8 +32,40 @@ const categorySchema = new Schema<TCategory>(
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
+
+// virtual population
+
+categorySchema.virtual("children", {
+  ref: "Category",
+  localField: "_id",
+  foreignField: "parent",
+});
+
+// Add pre-save hook for slug generation
+
+// categorySchema.pre("save", function (next) {
+
+//   this.slug = slugify(this.title, { lower: true, strict: true });
+//   next();
+// });
+
+// Updates parent's isNested status
+
+categorySchema.post("save", async function (doc) {
+  if (doc.parent) {
+    await Category.findByIdAndUpdate(
+      doc.parent,
+      { $set: { isNested: true } },
+      { new: true }
+    );
+  }
+});
 
 const Category = model<TCategory>("Category", categorySchema);
 
