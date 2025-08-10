@@ -17,10 +17,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import CustomInput from "@/components/ui/custom-input";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { Loader } from "lucide-react";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { verifyToken } from "@/utils/verifyToken";
 
 type FormData = z.infer<typeof loginUserSchema>;
 
 function LoginForm() {
+  const [login, { error, isLoading }] = useLoginMutation();
+  const dispatch = useAppDispatch();
+
   const form = useForm<z.infer<typeof loginUserSchema>>({
     resolver: zodResolver(loginUserSchema),
     defaultValues: {
@@ -29,8 +37,11 @@ function LoginForm() {
     },
   });
 
-  const onSubmit = (values: FormData) => {
-    console.log(values);
+  const onSubmit = async (values: FormData) => {
+    const res = await login(values).unwrap();
+    
+    const user = verifyToken(res.data.accessToken);
+    dispatch(setUser({ user: user, token: res.data.accessToken }));
   };
 
   return (
@@ -69,9 +80,24 @@ function LoginForm() {
           )}
         />
 
-        <Button className="w-full h-12 rounded-md text-base uppercase" variant={"secondary"} type="submit">
-          Login Now
-        </Button>
+        {isLoading ? (
+          <Button
+            className="w-full h-12 rounded-md text-base uppercase"
+            variant={"secondary"}
+            type="submit"
+            disabled
+          >
+            <Loader className="animate-spin" /> Loggin in...
+          </Button>
+        ) : (
+          <Button
+            className="w-full h-12 rounded-md text-base uppercase"
+            variant={"secondary"}
+            type="submit"
+          >
+            Login Now
+          </Button>
+        )}
       </form>
     </Form>
   );

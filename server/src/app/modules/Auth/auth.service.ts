@@ -21,7 +21,10 @@ const registerUser = async (user: {
 };
 
 const loginUser = async (credentials: { password: string; email: string }) => {
-  const user = await User.findOne({ email: credentials.email });
+  const user = await User.findOne({ email: credentials.email }).select(
+    "+password"
+  );
+
   // checks if the user is exists
   if (!user) {
     throw new AppError(
@@ -37,26 +40,28 @@ const loginUser = async (credentials: { password: string; email: string }) => {
     );
   }
 
-  
-
-  if (!await User.isPasswordMatched(credentials.password, user.password)) {
+  if (!(await User.isPasswordMatched(credentials.password, user.password))) {
     throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
   }
 
+  const payload = {
+    _id: user._id, // ObjectId
+    name: user.name, // string
+    email: user.email, // string
+    role: user.role, // string ('admin')
+    isActive: user.isActive, // boolean
+    createdAt: user.createdAt, // Date
+    updatedAt: user.updatedAt, // Date
+  };
+
   const accessToken = createToken(
-    {
-      userId: user._id.toString(),
-      role: user.role,
-    },
+    payload,
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string
   );
 
   const refreshToken = createToken(
-    {
-      userId: user._id.toString(),
-      role: user.role,
-    },
+    payload,
     config.jwt_refresh_secret as string,
     config.jwt_refresh_expires_in as string
   );

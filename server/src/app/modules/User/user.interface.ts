@@ -8,6 +8,8 @@ export interface TUser {
   password: string;
   role: "admin" | "user";
   isActive: boolean;
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface UserModel extends Model<TUser> {

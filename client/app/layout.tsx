@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import { Providers } from "./Providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,18 +23,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      
-
       <body className={`${inter.variable}  antialiased`}>
-        <nav>
-          <Header />
-        </nav>
-        <main>
-
-        {children}
-        </main>
-        </body>
-        
+        <Providers>
+          <nav>
+            <Header />
+          </nav>
+          <main>{children}</main>
+          <Toaster position="top-right" />
+        </Providers>
+      </body>
     </html>
   );
 }

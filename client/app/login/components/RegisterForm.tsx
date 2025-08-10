@@ -2,7 +2,7 @@
 import { registerUserSchema } from "@/schema/authSchema";
 import React from "react";
 
-import z from "zod";
+import z, { email } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -17,10 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import CustomInput from "@/components/ui/custom-input";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 type FormData = z.infer<typeof registerUserSchema>;
 
 function RegisterForm() {
+  const [register, { data, error, isLoading }] = useRegisterMutation();
+
   const form = useForm<z.infer<typeof registerUserSchema>>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: {
@@ -32,7 +37,12 @@ function RegisterForm() {
   });
 
   const onSubmit = (values: FormData) => {
-    console.log(values);
+    const userInfo = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    };
+    register(userInfo);
   };
 
   return (
@@ -98,13 +108,25 @@ function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button
-          className="w-full h-12 rounded-md text-base uppercase"
-          type="submit"
-          variant={"secondary"}
-        >
-          Create An Account
-        </Button>
+        {isLoading ? (
+          <Button
+            className="w-full h-12 rounded-md text-base uppercase"
+            type="submit"
+            variant={"secondary"}
+            disabled
+          >
+            <Loader className="animate-spin" /> Creating Account...
+          </Button>
+        ) : (
+          <Button
+            className="w-full h-12 rounded-md text-base uppercase"
+            type="submit"
+            variant={"secondary"}
+            
+          >
+            Create An Account
+          </Button>
+        )}
       </form>
     </Form>
   );
