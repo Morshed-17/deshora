@@ -5,17 +5,30 @@ import catchAsync from "../../utils/asyncCatch";
 import sendResponse from "../../utils/sendResponse";
 
 const getAllProducts: RequestHandler = catchAsync(
- 
   async (req: Request, res: Response) => {
-     const query = req.query
+    const query = req.query;
     const result = await ProductService.getAllProducts(query);
     sendResponse(res, {
-      statusCode: result.products.length > 0 ? httpStatus.OK : httpStatus.NOT_FOUND,
+      statusCode:
+        result.products.length > 0 ? httpStatus.OK : httpStatus.NOT_FOUND,
       success: true,
       message:
         result.products.length > 0
           ? "Products retrieved successfully!"
           : "No categories found",
+      data: result,
+    });
+  }
+);
+
+const getSingleProductBySku: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { sku } = req.params;
+    const result = await ProductService.getSingleProductBySku({ sku });
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Product retrieved successfully",
       data: result,
     });
   }
@@ -39,6 +52,7 @@ const createProduct: RequestHandler = catchAsync(
 
 const ProductController = {
   createProduct,
+  getSingleProductBySku,
   getAllProducts,
 };
 

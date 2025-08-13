@@ -4,7 +4,8 @@ export const productValidationShema = z.object({
   body: z.object({
     categoryId: z.string("Category ID is required"),
     title: z.string().min(1, "Product name is required"),
-    description: z.string().min(1, "Product description is required"),
+    color: z.string().optional(),
+    description: z.string().optional(),
 
     price: z.preprocess((val) => {
       if (typeof val === "string") {

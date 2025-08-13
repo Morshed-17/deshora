@@ -53,9 +53,9 @@
 :root {
   --radius: 0.65rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(24.054% 0.00569 285.902);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0% 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: #d41f27;
@@ -65,7 +65,7 @@
   --muted: oklch(0.97 0 0);
   --muted-foreground: #4d4d4d;
   --accent: oklch(0.97 0 0);
-  --accent-foreground: #a7a7a7;
+  --accent-foreground: #797979;
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -131,7 +131,7 @@
     @apply cursor-pointer;
   }
   .hoverEffect {
-    @apply transition-all duration-300 ease-in;
+    @apply transition-all duration-200 ease-in-out;
   }
 }
 

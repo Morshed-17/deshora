@@ -34,7 +34,6 @@ export const store = configureStore({
     }).concat(baseApi.middleware),
 });
 
-setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 

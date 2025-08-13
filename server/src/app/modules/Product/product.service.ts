@@ -6,6 +6,7 @@ import Product from "./product.model";
 import { getImageHash } from "../../utils/getImageHash";
 import { ALLOWED_IMAGE_TYPES } from "../../constants";
 import QueryBuilder from "../../builder/QueryBuilder";
+import { generateSKU } from "./product.utils";
 
 const getAllProducts = async (query: any) => {
   // Initialize QueryBuilder
@@ -28,29 +29,20 @@ const getAllProducts = async (query: any) => {
   };
 };
 
+const getSingleProductBySku = async ({ sku }: { sku: string }) => {
+  const result = await Product.findOne({ sku });
+  return result
+};
+
 const createProduct = async (
   productData: TProduct,
   files: {
-    featuredImage?: Express.Multer.File[];
     galleryImages?: Express.Multer.File[];
   }
 ) => {
-  const { title, description, categoryId, price, stock } = productData;
+  const { title, description, categoryId, price, stock, color } = productData;
 
   // Validate featured image
-
-  // Validate featured image
-  if (!files.featuredImage || files.featuredImage.length === 0) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Featured image is required");
-  }
-
-  const file = files.featuredImage[0];
-  if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      `Invalid file type for featured image: ${files.featuredImage[0].mimetype}`
-    );
-  }
 
   if (files.galleryImages && files.galleryImages.length > 0) {
     files.galleryImages.forEach((file) => {
@@ -62,14 +54,6 @@ const createProduct = async (
       }
     });
   }
-
-  // upload featured image to cloudinary
-  const featuredImageHash = getImageHash(file.buffer);
-  const featuredImageUrl = await uploadBufferToCloudinary(
-    files.featuredImage[0].buffer,
-    "products",
-    featuredImageHash
-  );
 
   // upload gallery image to cloudinary
 
@@ -94,8 +78,9 @@ const createProduct = async (
     categoryId,
     price,
     stock,
-    featuredImage: featuredImageUrl,
+    color,
     galleryImages: galleryImageUrls,
+    sku: generateSKU(title),
   };
 
   const result = await Product.create(product);
@@ -105,5 +90,6 @@ const createProduct = async (
 
 export const ProductService = {
   createProduct,
+  getSingleProductBySku,
   getAllProducts,
 };

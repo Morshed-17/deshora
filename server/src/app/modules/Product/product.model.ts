@@ -9,7 +9,11 @@ const productSchema = new Schema<TProduct>(
     },
     description: {
       type: String,
-      required: true,
+      default: ''
+    },
+    color:{
+      type: String,
+      default: ''
     },
     categoryId: {
       type: Schema.Types.ObjectId,
@@ -24,12 +28,14 @@ const productSchema = new Schema<TProduct>(
       type: Number,
       required: true,
     },
-    featuredImage: {
-      type: String,
-    },
     galleryImages: {
       type: [String],
+      default: []
     },
+    sku: {
+       type: String,
+       required: true
+    }
   },
   { timestamps: true }
 );

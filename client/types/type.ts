@@ -8,3 +8,32 @@ export interface TUser {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ICategory {
+  children: any[]; // Change `any[]` to a stricter type if you know the shape of children
+  createdAt: string; // ISO date string
+  description: string;
+  id: string;
+  isDeleted: boolean;
+  isNested: boolean;
+  parent: string | null;
+  slug: string;
+  title: string;
+  updatedAt: string; // ISO date string
+  __v: number;
+  _id: string;
+}
+
+export interface IProduct {
+  _id: string;
+  title: string;
+  description: string;
+  categoryId: string;
+  color: string
+  price: number;
+  stock: number;
+  galleryImages: string[];
+  sku: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}

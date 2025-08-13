@@ -18,13 +18,18 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import CustomInput from "@/components/ui/custom-input";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
-import { Loader } from "lucide-react";
+import { Clover, Loader } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof registerUserSchema>;
 
-function RegisterForm() {
-  const [register, { data, error, isLoading }] = useRegisterMutation();
+interface Props {
+  setToggle: (value: "login" | "register") => void;
+}
+
+function RegisterForm({ setToggle }: Props) {
+  const [register, { error, isLoading }] = useRegisterMutation();
 
   const form = useForm<z.infer<typeof registerUserSchema>>({
     resolver: zodResolver(registerUserSchema),
@@ -36,13 +41,25 @@ function RegisterForm() {
     },
   });
 
-  const onSubmit = (values: FormData) => {
+  const onSubmit = async (values: FormData) => {
     const userInfo = {
       name: values.name,
       email: values.email,
       password: values.password,
     };
-    register(userInfo);
+
+    try {
+      const res = await register(userInfo).unwrap();
+      if (res.success) {
+        toast.success("Account created sccuessfully. Now please log in.");
+        setToggle("login");
+      }
+    } catch (error: any) {
+      if(error.status === 409){
+
+        toast.error("This email is already registerd");
+      }
+    }
   };
 
   return (
@@ -122,7 +139,6 @@ function RegisterForm() {
             className="w-full h-12 rounded-md text-base uppercase"
             type="submit"
             variant={"secondary"}
-            
           >
             Create An Account
           </Button>

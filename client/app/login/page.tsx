@@ -38,9 +38,7 @@ function LoginPage() {
       </div>
       <div className="flex justify-center mt-6 max-w-sm mx-auto">
         <div className="w-full">
-          {isLogin && <LoginForm />}
-
-          {isRegister && <RegisterForm />}
+          {isLogin ? <LoginForm /> : <RegisterForm setToggle={setToggle}/>}
         </div>
       </div>
     </div>

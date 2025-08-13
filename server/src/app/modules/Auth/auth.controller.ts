@@ -19,16 +19,20 @@ const registerUser: RequestHandler = catchAsync(
 
 const loginUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-
-    
-
     const { accessToken, refreshToken } = await AuthService.loginUser(req.body);
 
     res.cookie("refreshToken", refreshToken, {
-      secure: config.NODE_ENV === "production",
       httpOnly: true,
-      sameSite: "none",
-      maxAge: 1000 * 60 * 60 * 24 * 365,
+      secure: config.NODE_ENV === "production", // true in prod
+      sameSite: config.NODE_ENV === "production" ? "none" : "lax", // lax for dev
+      maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+    });
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: config.NODE_ENV === "production",
+      sameSite: config.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 10, // 10 days
     });
 
     sendResponse(res, {

@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/Container";
+import { logout } from "@/redux/features/auth/authSlice";
 import Link from "next/link";
 import React from "react";
+import { useDispatch } from "react-redux";
+import LogoutButtonHeader from "./LogoutButtonHeader";
 
 function TopHeader() {
   return (
-    <div className="border-b border-black/5">
+    <div className="border-b border-black/5 hidden lg:block">
       <Container className=" mx-auto flex items-center justify-between text-sm text-muted-foreground h-14 ">
         <div>
           {" "}

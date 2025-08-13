@@ -3,9 +3,10 @@ import { Types } from "mongoose";
 export interface TProduct {
   title: string;
   description: string;
+  color: string
   categoryId: string | Types.ObjectId;
   price: number;
   stock: number;
-  featuredImage: string; // Cloudinary URL
+  sku: string
   galleryImages: string[]; // Array of Cloudinary URLs
 }

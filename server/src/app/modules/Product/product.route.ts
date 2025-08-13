@@ -6,10 +6,8 @@ import ProductController from "./product.controller";
 import { upload } from "../../middlewares/multer";
 const router = express.Router();
 
-router.get(
-  "/",
-  ProductController.getAllProducts
-);
+router.get("/", ProductController.getAllProducts);
+router.get("/:sku", ProductController.getSingleProductBySku);
 
 router.post(
   "/create",

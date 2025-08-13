@@ -22,6 +22,8 @@ import { Loader } from "lucide-react";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type FormData = z.infer<typeof loginUserSchema>;
 
@@ -29,19 +31,27 @@ function LoginForm() {
   const [login, { error, isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
 
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof loginUserSchema>>({
     resolver: zodResolver(loginUserSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "morshed@gmail.com",
+      password: "morshed@@32",
     },
   });
 
   const onSubmit = async (values: FormData) => {
-    const res = await login(values).unwrap();
+    try {
+      const res = await login(values).unwrap();
+      const user = verifyToken(res.data.accessToken);
+      dispatch(setUser({ user: user, token: res.data.accessToken }));
+      router.push("/");
+      toast.success("Logged in successfully");
+    } catch (error) {
+      toast.error("Invalid credentials");
+    }
     
-    const user = verifyToken(res.data.accessToken);
-    dispatch(setUser({ user: user, token: res.data.accessToken }));
   };
 
   return (
