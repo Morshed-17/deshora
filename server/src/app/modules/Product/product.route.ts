@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { productValidationShema } from "./product.validation";
 import validateRequest from "../../middlewares/validateRequst";
 import auth from "../../middlewares/auth";
@@ -13,6 +13,10 @@ router.post(
   "/create",
   auth("admin"),
   upload,
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next()
+  },
   validateRequest(productValidationShema),
   ProductController.createProduct
 );

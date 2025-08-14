@@ -2,9 +2,6 @@
 
 import * as React from "react";
 
-import { NavMain } from "@/app/(admin)/dashboard/components/nav-main";
-import { NavUser } from "@/app/(admin)/dashboard/components/nav-user";
-
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +18,8 @@ import {
   ChartBar,
   Users,
 } from "lucide-react";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
 
 // This is sample data.
 const data = {
@@ -44,6 +43,10 @@ const data = {
         {
           title: "All Products",
           url: "/dashboard/all-products",
+        },
+        {
+          title: "Add New",
+          url: "/dashboard/create-product",
         },
       ],
     },
@@ -104,7 +107,9 @@ const data = {
     },
   ],
 };
-export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function DashboardSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>

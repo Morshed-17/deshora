@@ -37,10 +37,14 @@ const getSingleProductBySku: RequestHandler = catchAsync(
 const createProduct: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const files = req.files as {
-      featuredImage?: Express.Multer.File[];
-      galleryImages?: Express.Multer.File[];
+      file?: Express.Multer.File[];
     };
-    const result = await ProductService.createProduct(req.body, files);
+
+    const result = await ProductService.createProduct(
+      req.body,
+      files.file as Express.Multer.File[]
+    );
+
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,

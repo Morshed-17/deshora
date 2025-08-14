@@ -1,5 +1,5 @@
 import React from "react";
-import { DashboardSidebar } from "@/app/(admin)/dashboard/components/dashbard-sidebar";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,6 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { DashboardSidebar } from "./dashboard/_components/dashbard-sidebar";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (

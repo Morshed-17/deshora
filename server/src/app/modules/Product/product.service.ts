@@ -10,7 +10,10 @@ import { generateSKU } from "./product.utils";
 
 const getAllProducts = async (query: any) => {
   // Initialize QueryBuilder
-  const queryBuilder = new QueryBuilder(Product.find().populate("categoryId", "title"), query);
+  const queryBuilder = new QueryBuilder(
+    Product.find().populate("categoryId", "title"),
+    query
+  );
 
   // Build Query
   const products = await queryBuilder
@@ -31,21 +34,20 @@ const getAllProducts = async (query: any) => {
 
 const getSingleProductBySku = async ({ sku }: { sku: string }) => {
   const result = await Product.findOne({ sku });
-  return result
+  return result;
 };
 
 const createProduct = async (
   productData: TProduct,
-  files: {
-    galleryImages?: Express.Multer.File[];
-  }
+  files: Express.Multer.File[]
 ) => {
-  const { title, description, categoryId, price, stock, color } = productData;
+  const { title, description, categoryId, price, color, sizesAvailable } =
+    productData;
 
   // Validate featured image
 
-  if (files.galleryImages && files.galleryImages.length > 0) {
-    files.galleryImages.forEach((file) => {
+  if (files && files.length > 0) {
+    files.forEach((file) => {
       if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
         throw new AppError(
           httpStatus.BAD_REQUEST,
@@ -58,9 +60,10 @@ const createProduct = async (
   // upload gallery image to cloudinary
 
   const galleryImageUrls =
-    files.galleryImages && files.galleryImages.length > 0
+    files && files.length > 0
       ? await Promise.all(
-          files.galleryImages.map(async (file) => {
+          files.map(async (file) => {
+            console.log(file, "from map");
             const hash = getImageHash(file.buffer);
             const url = await uploadBufferToCloudinary(
               file.buffer,
@@ -77,8 +80,8 @@ const createProduct = async (
     description,
     categoryId,
     price,
-    stock,
     color,
+    sizesAvailable,
     galleryImages: galleryImageUrls,
     sku: generateSKU(title),
   };

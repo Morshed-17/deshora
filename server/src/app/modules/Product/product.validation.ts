@@ -14,11 +14,12 @@ export const productValidationShema = z.object({
       return val; // if it's already a number or something else
     }, z.number().positive("Price must be positive number")),
 
-    stock: z.preprocess((val) => {
-      if (typeof val === "string") {
-        return Number(val);
-      }
-      return val;
-    }, z.number().nonnegative("Stock cannot be negative")),
+    sizesAvailable: z
+      .object({
+        size: z.string(),
+        stock: z.number().default(0),
+      })
+      .array()
+      .optional(),
   }),
 });
