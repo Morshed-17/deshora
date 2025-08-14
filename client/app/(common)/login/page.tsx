@@ -12,7 +12,7 @@ function LoginPage() {
   const isRegister = toggle === "register";
 
   return (
-    <div>
+    <div className="my-12">
       <div className="h-16  flex justify-center items-end border-b-2 ">
         <div className="max-w-sm flex w-full px-5 ">
           <button

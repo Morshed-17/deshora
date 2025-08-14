@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/shared/Header";
+import Header from "@/components/common/Header";
 import { Providers } from "./Providers";
 import { Toaster } from "@/components/ui/sonner";
-import Footer from "@/components/shared/Footer/Footer";
+import Footer from "@/components/common/Footer/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,13 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable}  antialiased`}>
         <Providers>
-          <nav>
-            <Header />
-          </nav>
-          <main>{children}</main>
-          <footer>
-            <Footer />
-          </footer>
+          {children}
           <Toaster position="top-right" />
         </Providers>
       </body>

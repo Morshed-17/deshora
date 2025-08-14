@@ -10,7 +10,7 @@ import { generateSKU } from "./product.utils";
 
 const getAllProducts = async (query: any) => {
   // Initialize QueryBuilder
-  const queryBuilder = new QueryBuilder(Product.find(), query);
+  const queryBuilder = new QueryBuilder(Product.find().populate("categoryId", "title"), query);
 
   // Build Query
   const products = await queryBuilder

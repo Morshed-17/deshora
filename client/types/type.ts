@@ -28,7 +28,7 @@ export interface IProduct {
   _id: string;
   title: string;
   description: string;
-  categoryId: string;
+  categoryId: ICategory;
   color: string
   price: number;
   stock: number;

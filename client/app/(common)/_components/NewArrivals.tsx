@@ -1,5 +1,5 @@
 "use client";
-import ProductCard from "@/components/shared/Product/ProductCard";
+import ProductCard from "@/components/common/Product/ProductCard";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { useGetAllProductsQuery } from "@/redux/features/product/productApi";
