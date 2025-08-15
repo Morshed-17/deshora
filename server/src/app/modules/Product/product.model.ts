@@ -20,8 +20,8 @@ const productSchema = new Schema<TProduct>(
       type: String,
       default: "",
     },
-    categoryId: {
-      type: Schema.Types.ObjectId,
+    categoryIds: {
+      type: [Schema.Types.ObjectId],
       ref: "Category",
       required: true,
     },
@@ -37,6 +37,10 @@ const productSchema = new Schema<TProduct>(
       type: [String],
       default: [],
       required: true,
+    },
+    hasSizes: {
+      type: Boolean,
+      default: false,
     },
     sizesAvailable: [sizesAvailableSchema],
     sku: {

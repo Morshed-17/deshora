@@ -14,6 +14,13 @@ import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import InnerImageZoom from "react-inner-image-zoom";
 import "react-inner-image-zoom/lib/styles.min.css";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 export default function ProductDetailsPage() {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
@@ -36,7 +43,7 @@ export default function ProductDetailsPage() {
 
       <Container className="flex flex-col lg:flex-row gap-8  mx-auto mt-4">
         {/* Left: Image Gallery */}
-        <div className="flex gap-4 ">
+        <div className="flex gap-4 flex-1">
           {/* Thumbnail list */}
           <Swiper
             onSwiper={setThumbsSwiper}
@@ -49,10 +56,10 @@ export default function ProductDetailsPage() {
             onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
           >
             {product.galleryImages.map((image, index) => (
-              <SwiperSlide key={index} className="cursor-pointer mb-2 !h-auto">
+              <SwiperSlide key={index} className="cursor-pointer  !h-auto">
                 <img
                   src={image}
-                  className={`max-w-full max-h-20 sm:max-h-28 md:max-h-32 object-contain p-1 ${
+                  className={`max-w-full max-h-20 sm:max-h-28 md:max-h-32 object-contain  ${
                     activeIndex === index
                       ? "border-[#0000005b] border p-1"
                       : "p-1"
@@ -68,15 +75,15 @@ export default function ProductDetailsPage() {
             spaceBetween={10}
             thumbs={{ swiper: thumbsSwiper }}
             modules={[FreeMode, Navigation, Thumbs]}
-            className="mySwiper2 relative w-full  lg:w-[550px]  border border-gray-200"
+            className=" w-full  lg:w-[550px]"
             onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
           >
             {product.galleryImages.map((image, index) => (
               <SwiperSlide key={index}>
                 <InnerImageZoom
                   src={image}
-                  className="w-full h-full object-cover"
                   zoomType="hover"
+                  className="!block border border-gray-200"
                 />
               </SwiperSlide>
             ))}
@@ -84,7 +91,7 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Right: Product Info */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4  flex-1">
           <h1 className="text-lg md:text-2xl font-semibold">{product.title}</h1>
           <p className="text-sm text-gray-500">SKU: {product.sku}</p>
           <p className="text-xl md:text-3xl font-bold">৳ {product.price}</p>
@@ -93,9 +100,26 @@ export default function ProductDetailsPage() {
             <span className="font-semibold">Color:</span> {product.color}
           </p>
 
-          <div>
-            <span className="font-semibold">Size:</span>{" "}
-            <span className="bg-gray-100 px-3 py-1 rounded">NA</span>
+          <div className="flex items-center">
+            <span className="font-semibold">Size: </span>{" "}
+            <div className="px-3 py-1 rounded flex flex-wrap gap-2">
+              {product.sizesAvailable?.length > 0 &&
+                product.sizesAvailable?.map((item, index) =>
+                  item.stock === 0 ? (
+                    <Button
+                      onClick={() => toast.error("Size out of stock 🥲")}
+                      className="bg-primary"
+                      key={index}
+                    >
+                      {item.size}
+                    </Button>
+                  ) : (
+                    <Button variant={"outline"} key={index}>
+                      {item.size}
+                    </Button>
+                  )
+                )}
+            </div>
           </div>
 
           <button className="bg-black text-white px-6 py-3 mt-4 hover:bg-gray-800">

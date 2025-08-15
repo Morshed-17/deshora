@@ -57,7 +57,7 @@ const data = {
       items: [
         {
           title: "All Categories",
-          url: "#",
+          url: "/dashboard/all-categories",
         },
       ],
     },

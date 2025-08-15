@@ -1,9 +1,9 @@
 "use client";
 import PageTitle from "@/components/dashboard/PageTitle";
-import React, { useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { file, z } from "zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,15 +20,21 @@ import ImageUploader from "@/components/ui/ImageUploader";
 import SizesForm from "./size-form";
 import { useCreateNewProductMutation } from "@/redux/features/product/productApi";
 import { toast } from "sonner";
+import { useGetAllCategoriesQuery } from "@/redux/features/category/categoryApi";
+import { Loader } from "lucide-react";
+import { ICategory } from "@/types/type";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   title: z.string().min(1, "Product name is required"),
+  categoryIds: z.string().array().min(1, "Category is required"),
   color: z.string().optional(),
   description: z.string().optional(),
-  categoryId: z.string(),
   price: z
     .number({ message: "Please enter price" })
     .positive("Price must be positive"),
+  hasSizes: z.boolean(), // ✅ New field
+  stock: z.number().min(0, "Stock cannot be negative").optional(),
   sizesAvailable: z.array(
     z.object({
       size: z.string().min(1, "Size is required"),
@@ -40,9 +46,22 @@ const formSchema = z.object({
 });
 
 function page() {
+  const [categories, setCategories] = useState<ICategory[]>([]);
+
+  const { data: result, isLoading: categoryLoading } =
+    useGetAllCategoriesQuery(undefined);
+
+  const categoryResult = result?.data;
+
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
-  const [createNewProduct, { error, isLoading }] =
+
+  const [createNewProduct, { error, isLoading: productLoading }] =
     useCreateNewProductMutation();
+
+  useEffect(() => {
+    setCategories(categoryResult);
+  }, [categoryLoading]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,7 +70,9 @@ function page() {
       description: "Onek valo",
       price: 0,
       galleryImages: null, // default for file input
-      categoryId: "689ae96486a04e273039ab3e",
+      hasSizes: false,
+      categoryIds: [],
+      stock: 0,
       sizesAvailable: [
         {
           size: "Default",
@@ -72,6 +93,7 @@ function page() {
     const { galleryImages, ...rest } = data;
 
     formData.append("data", JSON.stringify(rest));
+    console.log(data);
 
     try {
       const res = await createNewProduct(formData).unwrap();
@@ -85,6 +107,7 @@ function page() {
   return (
     <div>
       <PageTitle>Create New Product</PageTitle>
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -150,8 +173,7 @@ function page() {
                         placeholder="Enter price"
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          field.onChange(value === "" ? "" : Number(value));
+                          field.onChange(Number(e.target.value));
                         }}
                       />
                     </FormControl>
@@ -186,24 +208,139 @@ function page() {
             </div>
 
             {/* Sizes Form */}
-            <div className="flex-1 mt-5 md:mt-0">
+            <div className="flex-1 mt-5 md:mt-0 flex flex-col gap-5">
+              {/* Category */}
+
               <FormField
                 control={form.control}
-                name="sizesAvailable"
+                name="categoryIds"
+                render={() => (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel className="text-base">
+                        Category of the product
+                      </FormLabel>
+                    </div>
+                    {categories?.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="categoryIds"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-center gap-2"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([
+                                          ...field.value,
+                                          item.id,
+                                        ])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal">
+                                {item.title}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("hasSizes") ? (
+                <FormField
+                  control={form.control}
+                  name="sizesAvailable"
+                  render={({ field }) => (
+                    <SizesForm
+                      value={field.value || []}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="stock"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Stock</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <FormField
+                control={form.control}
+                name="hasSizes"
                 render={({ field }) => (
-                  <SizesForm
-                    value={field.value || []}
-                    onChange={field.onChange}
-                  />
+                  <FormItem className="flex items-center gap-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(!!checked);
+
+                          if (checked) {
+                            // Initialize sizesAvailable if empty
+                            const current = form.getValues("sizesAvailable");
+                            if (
+                              !Array.isArray(current) ||
+                              current.length === 0
+                            ) {
+                              form.setValue("sizesAvailable", [
+                                { size: "", stock: 0 },
+                              ]);
+                            }
+                          } else {
+                            // Clear sizesAvailable when switching off
+                            form.setValue("sizesAvailable", []);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel>Has Sizes?</FormLabel>
+                  </FormItem>
                 )}
               />
             </div>
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full">
-            Add Product
-          </Button>
+
+          {productLoading ? (
+            <Button disabled className="w-full">
+              <Loader className="animate-spin"></Loader> Adding product..
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full">
+              Add Product
+            </Button>
+          )}
         </form>
       </Form>
     </div>

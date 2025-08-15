@@ -11,7 +11,7 @@ import { generateSKU } from "./product.utils";
 const getAllProducts = async (query: any) => {
   // Initialize QueryBuilder
   const queryBuilder = new QueryBuilder(
-    Product.find().populate("categoryId", "title"),
+    Product.find().populate("categoryIds", "title"),
     query
   );
 
@@ -41,8 +41,16 @@ const createProduct = async (
   productData: TProduct,
   files: Express.Multer.File[]
 ) => {
-  const { title, description, categoryId, price, color, sizesAvailable } =
-    productData;
+  const {
+    title,
+    description,
+    categoryIds,
+    price,
+    color,
+    sizesAvailable,
+    hasSizes,
+    stock,
+  } = productData;
 
   // Validate featured image
 
@@ -78,10 +86,12 @@ const createProduct = async (
   const product: TProduct = {
     title,
     description,
-    categoryId,
+    categoryIds,
     price,
     color,
     sizesAvailable,
+    hasSizes,
+    stock,
     galleryImages: galleryImageUrls,
     sku: generateSKU(title),
   };

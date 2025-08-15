@@ -2,7 +2,7 @@ import z from "zod";
 
 export const productValidationShema = z.object({
   body: z.object({
-    categoryId: z.string("Category ID is required"),
+    categoryIds: z.string().array().min(1, "Category ID is required"),
     title: z.string().min(1, "Product name is required"),
     color: z.string().optional(),
     description: z.string().optional(),

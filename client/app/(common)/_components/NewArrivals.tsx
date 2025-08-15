@@ -2,6 +2,7 @@
 import ProductCard from "@/components/common/Product/ProductCard";
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
+
 import { useGetAllProductsQuery } from "@/redux/features/product/productApi";
 import { IProduct } from "@/types/type";
 import React from "react";
@@ -17,6 +18,8 @@ function NewArrivals() {
           <ProductCard product={product} key={product._id} />
         ))}
       </div>
+
+     
     </Container>
   );
 }

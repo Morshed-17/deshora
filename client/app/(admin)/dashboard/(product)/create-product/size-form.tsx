@@ -14,7 +14,11 @@ interface SizesFormProps {
 }
 
 export default function SizesForm({ value = [], onChange }: SizesFormProps) {
-  const [sizes, setSizes] = useState<SizeType[]>(value);
+  const [sizes, setSizes] = useState<SizeType[]>(
+    Array.isArray(value) ? value : []
+  );
+
+
 
   useEffect(() => {
     onChange?.(sizes);
@@ -28,6 +32,7 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
     val: string | number
   ) => {
     const newSizes = [...sizes];
+
     newSizes[index][field] =
       field === "stock" ? (Number(val) as never) : (String(val) as never);
     setSizes(newSizes);

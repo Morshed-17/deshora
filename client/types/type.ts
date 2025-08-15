@@ -23,16 +23,21 @@ export interface ICategory {
   __v: number;
   _id: string;
 }
+export interface TSize {
+  size: string;
+  stock: number;
+}
 
 export interface IProduct {
   _id: string;
   title: string;
   description: string;
-  categoryId: ICategory;
-  color: string
+  categoryIds: string[];
+  color: string;
   price: number;
   stock: number;
   galleryImages: string[];
+  sizesAvailable: TSize[];
   sku: string;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string

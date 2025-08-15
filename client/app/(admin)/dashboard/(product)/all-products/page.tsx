@@ -3,12 +3,14 @@ import PageTitle from "@/components/dashboard/PageTitle";
 import { useGetAllProductsQuery } from "@/redux/features/product/productApi";
 import React from "react";
 import { productCollumns } from "./product-columns";
-import { DataTable } from "../../../../components/ui/data-table";
+
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
 
 function AllProducts() {
   const { data } = useGetAllProductsQuery(undefined);
   const products = data?.data?.products;
+  console.log(products)
 
   return (
     <div>
