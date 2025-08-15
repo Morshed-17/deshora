@@ -32,7 +32,7 @@ export interface IProduct {
   _id: string;
   title: string;
   description: string;
-  categoryIds: string[];
+  categoryIds: ICategory[];
   color: string;
   price: number;
   stock: number;

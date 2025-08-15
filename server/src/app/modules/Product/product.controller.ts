@@ -53,11 +53,24 @@ const createProduct: RequestHandler = catchAsync(
     });
   }
 );
+const deleteAProduct: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await ProductService.deleteAProduct(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Product deleted successfully",
+      data: result,
+    });
+  }
+);
 
 const ProductController = {
   createProduct,
   getSingleProductBySku,
   getAllProducts,
+  deleteAProduct,
 };
 
 export default ProductController;

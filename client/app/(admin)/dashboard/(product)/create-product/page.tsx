@@ -73,12 +73,7 @@ function page() {
       hasSizes: false,
       categoryIds: [],
       stock: 0,
-      sizesAvailable: [
-        {
-          size: "Default",
-          stock: 0,
-        },
-      ],
+      sizesAvailable: [],
     },
   });
 

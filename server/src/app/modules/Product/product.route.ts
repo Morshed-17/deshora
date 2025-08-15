@@ -9,13 +9,16 @@ const router = express.Router();
 router.get("/", ProductController.getAllProducts);
 router.get("/:sku", ProductController.getSingleProductBySku);
 
+// admin
+router.delete("/:id", auth("admin"), ProductController.deleteAProduct);
+// admin
 router.post(
   "/create",
   auth("admin"),
   upload,
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
-    next()
+    next();
   },
   validateRequest(productValidationShema),
   ProductController.createProduct
