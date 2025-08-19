@@ -4,15 +4,7 @@ const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllProducts: builder.query({
       query: () => "/products",
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.data.products.map(({ _id }: { _id: string }) => ({
-                type: "Products" as const,
-                id: _id,
-              })),
-            ]
-          : [{ type: "Products", id: "LIST" }],
+      providesTags: ["Products"]
     }),
     createNewProduct: builder.mutation<any, FormData>({
       query: (formData) => {
@@ -32,10 +24,17 @@ const productApi = baseApi.injectEndpoints({
       query: (id: string) => {
         return { url: `/products/${id}`, method: "DELETE" };
       },
-      invalidatesTags: (result, error, id) => [
-        { type: "Products", id }, // invalidate the deleted product
-        { type: "Products", id: "LIST" }, // invalidate the list to refetch
-      ],
+      invalidatesTags: ["Products"],
+    }),
+    editAProduct: builder.mutation<any, { sku: string; formData: FormData }>({
+      query: ({ sku, formData }) => {
+        return {
+          url: `/products/edit/${sku}`,
+          method: "PUT",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["Products"],
     }),
   }),
 });
@@ -45,4 +44,5 @@ export const {
   useGetSingleProductBySkuQuery,
   useCreateNewProductMutation,
   useDeleteAProductMutation,
+  useEditAProductMutation,
 } = productApi;

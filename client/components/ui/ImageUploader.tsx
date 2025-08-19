@@ -16,17 +16,21 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { X } from "lucide-react";
 
+export type GalleryItem = { type: "file"; file: File } | { type: "url"; url: string };
+
+// Single sortable image item
 function SortableItem({
-  id,
-  file,
+  item,
   remove,
 }: {
-  id: string;
-  file: File;
+  item: GalleryItem;
   remove: () => void;
 }) {
+  // DnD setup
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+    useSortable({
+      id: item.type === "file" ? item.file.name : item.url, // unique id
+    });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -39,19 +43,18 @@ function SortableItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      
       className="relative group"
     >
       <img
-        src={URL.createObjectURL(file)}
-        alt={file.name}
+        src={item.type === "file" ? URL.createObjectURL(item.file) : item.url}
+        alt={item.type === "file" ? item.file.name : "image"}
         {...listeners}
         className="w-32 h-32 object-cover rounded-lg border"
       />
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation(); // stop DnD drag from starting
+          e.stopPropagation(); // prevent drag when removing
           remove();
         }}
         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
@@ -62,38 +65,50 @@ function SortableItem({
   );
 }
 
+// Main uploader component
 export default function ImageUploader({
-  value,
-  onChange,
+  value, // GalleryItem[]
+  onChange, // (items: GalleryItem[]) => void
 }: {
-  value: File[];
-  onChange: (files: File[]) => void;
+  value: GalleryItem[];
+  onChange: (items: GalleryItem[]) => void;
 }) {
   const sensors = useSensors(useSensor(PointerSensor));
 
+  // Add new uploaded files
   const handleDropFiles = (files: FileList | null) => {
     if (files) {
-      onChange([...value, ...Array.from(files)]);
+      const newItems: GalleryItem[] = Array.from(files).map((f) => ({
+        type: "file",
+        file: f,
+      }));
+      onChange([...value, ...newItems]);
     }
   };
 
+  // Drag & drop reordering
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (!over) return;
     if (active.id !== over.id) {
-      const oldIndex = value.findIndex((f) => f.name === active.id);
-      const newIndex = value.findIndex((f) => f.name === over.id);
+      const oldIndex = value.findIndex(
+        (i) => (i.type === "file" ? i.file.name : i.url) === active.id
+      );
+      const newIndex = value.findIndex(
+        (i) => (i.type === "file" ? i.file.name : i.url) === over.id
+      );
       onChange(arrayMove(value, oldIndex, newIndex));
     }
   };
 
-  const removeFile = (index: number) => {
+  // Remove an item by index
+  const removeItem = (index: number) => {
     onChange(value.filter((_, i) => i !== index));
   };
 
   return (
     <div>
-      {/* Upload Box */}
+      {/* Upload box */}
       <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
         <input
           type="file"
@@ -105,7 +120,7 @@ export default function ImageUploader({
         <span className="text-gray-500">Click or drag images here</span>
       </label>
 
-      {/* Sortable Images */}
+      {/* Sortable images */}
       {value.length > 0 && (
         <DndContext
           sensors={sensors}
@@ -113,16 +128,15 @@ export default function ImageUploader({
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={value.map((f) => f.name)}
+            items={value.map((i) => (i.type === "file" ? i.file.name : i.url))}
             strategy={rectSortingStrategy}
           >
             <div className="flex flex-wrap gap-4 mt-4 cursor-grab">
-              {value.map((file, idx) => (
+              {value.map((item, idx) => (
                 <SortableItem
-                  key={file.name}
-                  id={file.name}
-                  file={file}
-                  remove={() => removeFile(idx)}
+                  key={item.type === "file" ? item.file.name : item.url}
+                  item={item}
+                  remove={() => removeItem(idx)}
                 />
               ))}
             </div>

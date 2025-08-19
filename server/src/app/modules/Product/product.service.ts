@@ -100,6 +100,79 @@ const createProduct = async (
 
   return result;
 };
+
+const editProduct = async (
+  sku: string,
+  productData: Partial<TProduct>,
+  files: Express.Multer.File[]
+) => {
+  const {
+    title,
+    description,
+    categoryIds,
+    price,
+    color,
+    sizesAvailable,
+    hasSizes,
+    stock,
+  } = productData;
+
+  // Separate existingImages from the main object
+  const existingImages: string[] = productData.galleryImages || [];
+
+  // Validate featured image
+
+  if (files && files.length > 0) {
+    files.forEach((file) => {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          `Invalid file type for featured image: ${file.mimetype}`
+        );
+      }
+    });
+  }
+
+  // upload gallery image to cloudinary
+
+  const newGalleryUrls =
+    files && files.length > 0
+      ? await Promise.all(
+          files.map(async (file) => {
+            console.log(file, "from map");
+            const hash = getImageHash(file.buffer);
+            const url = await uploadBufferToCloudinary(
+              file.buffer,
+              "products",
+              hash // use hash as public_id
+            );
+            return url;
+          })
+        )
+      : [];
+
+  // Merge existing + new URLs
+  const finalGalleryImages = [...existingImages, ...newGalleryUrls];
+
+  let updates: Partial<TProduct> = {};
+  if (title) updates.title = title;
+  if (description) updates.description = description;
+  if (categoryIds) updates.categoryIds = categoryIds;
+  if (price !== undefined) updates.price = price;
+  if (color) updates.color = color;
+  if (sizesAvailable) updates.sizesAvailable = sizesAvailable;
+  if (hasSizes !== undefined) updates.hasSizes = hasSizes;
+  if (stock !== undefined) updates.stock = stock;
+
+  updates.galleryImages = finalGalleryImages;
+
+  const result = await Product.findOneAndUpdate({ sku }, updates, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
 const deleteAProduct = async (id: string) => {
   const result = await Product.findByIdAndDelete(id);
   return result;
@@ -110,4 +183,5 @@ export const ProductService = {
   getSingleProductBySku,
   getAllProducts,
   deleteAProduct,
+  editProduct,
 };

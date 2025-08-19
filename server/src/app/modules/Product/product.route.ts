@@ -23,5 +23,15 @@ router.post(
   validateRequest(productValidationShema),
   ProductController.createProduct
 );
+router.put(
+  "/edit/:sku",
+  auth("admin"),
+  upload,
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
+  ProductController.editProduct
+);
 
 export const ProductRoutes = router;

@@ -18,11 +18,10 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
     Array.isArray(value) ? value : []
   );
 
-
-
   useEffect(() => {
     onChange?.(sizes);
   }, [sizes, onChange]);
+
 
   const addSize = () => setSizes([...sizes, { size: "", stock: 0 }]);
 

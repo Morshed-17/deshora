@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 
 import { Row } from "@tanstack/react-table";
@@ -30,19 +31,21 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 import { toast } from "sonner";
+import Link from "next/link";
 
 function AllProducts() {
-  const [open, setOpen] = React.useState(false);
   const { data } = useGetAllProductsQuery(undefined);
   const products = data?.data?.products;
   const [deleteProduct, { isLoading }] = useDeleteAProductMutation();
+
   const handleDelete = async (productId: string) => {
+    console.log(productId);
     try {
       await deleteProduct(productId).unwrap();
       toast.success("Product deleted successfully");
-      setOpen(false);
     } catch (err) {
       console.error("Failed to delete the product:", err);
+      toast.error("Something went wrong")
     }
   };
 
@@ -62,7 +65,9 @@ function AllProducts() {
           </TableRow>
         </TableHeader>
 
-        <TableBody>
+        <TableBody> 
+          
+         
           {products?.map((product: IProduct) => (
             <TableRow key={product._id}>
               <TableCell>
@@ -87,11 +92,13 @@ function AllProducts() {
               <TableCell className="flex gap-2">
                 {/* <Button onClick={() => handleView(product)}>
                   <Eye />
-                </Button>
-                <Button onClick={() => handleEdit(product)}>
-                  <Edit />
                 </Button> */}
-                <Dialog open={open} onOpenChange={setOpen}>
+                <Link href={`/dashboard/edit-product/${product.sku}`}>
+                  <Button variant={"ghost"}>
+                    <Edit />
+                  </Button>
+                </Link>
+                <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="ghost" size={"icon"}>
                       <Trash />
@@ -104,15 +111,17 @@ function AllProducts() {
                       </DialogTitle>
                     </DialogHeader>
                     <DialogFooter>
-                      <Button variant="outline" onClick={() => setOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleDelete(product._id)}
-                      >
-                        Delete
-                      </Button>
+                      <DialogClose asChild>
+                        <Button variant={"outline"}>Cancel</Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleDelete(product._id)}
+                        >
+                          Delete
+                        </Button>
+                      </DialogClose>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>

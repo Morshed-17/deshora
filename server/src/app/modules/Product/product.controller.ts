@@ -9,8 +9,7 @@ const getAllProducts: RequestHandler = catchAsync(
     const query = req.query;
     const result = await ProductService.getAllProducts(query);
     sendResponse(res, {
-      statusCode:
-        result.products.length > 0 ? httpStatus.OK : httpStatus.NOT_FOUND,
+      statusCode: httpStatus.OK,
       success: true,
       message:
         result.products.length > 0
@@ -66,11 +65,34 @@ const deleteAProduct: RequestHandler = catchAsync(
   }
 );
 
+const editProduct: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { sku } = req.params;
+    const files = req.files as {
+      file?: Express.Multer.File[];
+    };
+
+    const result = await ProductService.editProduct(
+      sku,
+      req.body,
+      files.file as Express.Multer.File[]
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Product Edited successfully!",
+      data: result,
+    });
+  }
+);
+
 const ProductController = {
   createProduct,
   getSingleProductBySku,
   getAllProducts,
   deleteAProduct,
+  editProduct,
 };
 
 export default ProductController;

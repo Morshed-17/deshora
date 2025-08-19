@@ -32,11 +32,12 @@ export interface IProduct {
   _id: string;
   title: string;
   description: string;
-  categoryIds: ICategory[];
+  categoryIds: ICategory[] ;
   color: string;
   price: number;
   stock: number;
   galleryImages: string[];
+  hasSizes: boolean
   sizesAvailable: TSize[];
   sku: string;
   createdAt: string; // ISO date string

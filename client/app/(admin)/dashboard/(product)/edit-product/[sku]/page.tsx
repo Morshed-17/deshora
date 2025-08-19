@@ -2,7 +2,7 @@
 import PageTitle from "@/components/dashboard/PageTitle";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,80 +17,128 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ImageUploader, { GalleryItem } from "@/components/ui/ImageUploader";
-import SizesForm from "./size-form";
-import { useCreateNewProductMutation } from "@/redux/features/product/productApi";
+
+import {
+  useCreateNewProductMutation,
+  useEditAProductMutation,
+  useGetAllProductsQuery,
+  useGetSingleProductBySkuQuery,
+} from "@/redux/features/product/productApi";
 import { toast } from "sonner";
 import { useGetAllCategoriesQuery } from "@/redux/features/category/categoryApi";
 import { Loader } from "lucide-react";
-import { ICategory } from "@/types/type";
+import { ICategory, IProduct } from "@/types/type";
 import { Checkbox } from "@/components/ui/checkbox";
+import SizesForm from "../../create-product/size-form";
+import { useParams } from "next/navigation";
 
 const formSchema = z.object({
-  title: z.string().min(1, "Product name is required"),
-  categoryIds: z.string().array().min(1, "Category is required"),
+  title: z.string().optional(),
+  categoryIds: z.string().array().optional(),
   color: z.string().optional(),
   description: z.string().optional(),
   price: z
     .number({ message: "Please enter price" })
-    .positive("Price must be positive"),
-  hasSizes: z.boolean(), // ✅ New field
+    .positive("Price must be positive")
+    .optional(),
+  hasSizes: z.boolean().optional(), // ✅ New field
   stock: z.number().min(0, "Stock cannot be negative").optional(),
   sizesAvailable: z.array(
-    z.object({
-      size: z.string().min(1, "Size is required"),
-      stock: z.number().min(0, "Stock cannot be negative"),
-    })
+    z
+      .object({
+        size: z.string().min(1, "Size is required"),
+        stock: z.number().min(0, "Stock cannot be negative"),
+      })
+      .optional()
   ),
 
-  galleryImages: z.any().nullable(), // files will be handled separately
+  galleryImages: z.any().nullable().optional(), // files will be handled separately
 });
 
-function page() {
+function EditProduct() {
+  const { sku } = useParams<{ sku: string }>();
   const [categories, setCategories] = useState<ICategory[]>([]);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
 
+  const { data, isLoading: productLoading } =
+    useGetSingleProductBySkuQuery(sku);
+
+  const oldProduct = data?.data;
   const { data: result, isLoading: categoryLoading } =
     useGetAllCategoriesQuery(undefined);
 
   const categoryResult = result?.data;
 
-  const [createNewProduct, { error, isLoading: productLoading }] =
-    useCreateNewProductMutation();
+  const [editProduct, { error, isLoading: editProductLoading }] =
+    useEditAProductMutation();
 
-  useEffect(() => {
-    setCategories(categoryResult);
-  }, [categoryLoading]);
+  //   useEffect(() => {
 
+  //   }, []);
+  // when oldProduct loads, reset form values
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "Men trouser",
-      color: "Blue",
-      description: "Onek valo",
-      price: 0,
-      galleryImages: null, // default for file input
-      hasSizes: false,
-      categoryIds: [],
-      stock: 0,
-      sizesAvailable: [],
+      title: oldProduct?.title || "",
+      color: oldProduct?.color || "",
+      description: oldProduct?.description || "",
+      price: oldProduct?.price || 0,
+      galleryImages: oldProduct?.galleryImages || [], // default for file input
+      hasSizes: oldProduct?.hasSizes || false,
+      categoryIds: oldProduct?.categoryIds,
+      stock: oldProduct?.stock || 0,
+      sizesAvailable: oldProduct?.sizesAvailable || [],
     },
   });
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: "sizesAvailable",
+  });
+  useEffect(() => {
+    setCategories(categoryResult);
+
+    if (oldProduct) {
+      form.reset({
+        title: oldProduct.title,
+        color: oldProduct.color,
+        description: oldProduct.description,
+        price: oldProduct.price,
+        galleryImages: oldProduct.galleryImages,
+        hasSizes: oldProduct.hasSizes,
+        categoryIds: oldProduct.categoryIds, // careful if it's object[]
+        stock: oldProduct.stock,
+        sizesAvailable: oldProduct.sizesAvailable,
+      });
+      // Set existing images for ImageUploader
+      setExistingImages(oldProduct.galleryImages || []);
+    }
+  }, [oldProduct, form, categoryLoading]);
+
+  const galleryItems: GalleryItem[] = [
+    ...existingImages.map((url) => ({ type: "url" as const, url })),
+    ...galleryFiles.map((file) => ({ type: "file" as const, file })),
+  ];
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const formData = new FormData();
 
-    // Only append new files
-    galleryItems
-      .filter((item) => item.type === "file")
-      .forEach((item) => formData.append("file", item.file));
+    // Add new files
+    galleryFiles.forEach((file) => formData.append("file", file));
 
-    // Append the rest of the product data as JSON
-    const { galleryImages, ...rest } = data; // galleryImages is null for create
-    formData.append("data", JSON.stringify(rest));
+    // Merge existing images into main data object
+    const dataToSend = {
+      ...data,
+      galleryImages: existingImages, // existing images as part of main object
+    };
+
+    // Append the entire object as JSON
+    formData.append("data", JSON.stringify(dataToSend));
 
     try {
-      const res = await createNewProduct(formData).unwrap();
-      toast.success("Product Added Successfully");
+      const res = await editProduct({ sku, formData }).unwrap();
+      toast.success("Product Edited Successfully");
+      setGalleryFiles([]);
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -99,7 +147,7 @@ function page() {
 
   return (
     <div>
-      <PageTitle>Create New Product</PageTitle>
+      <PageTitle>Edit Product</PageTitle>
 
       <Form {...form}>
         <form
@@ -193,14 +241,24 @@ function page() {
                     </FormLabel>
                     <ImageUploader
                       value={galleryItems}
-                      onChange={setGalleryItems}
+                      onChange={(items) => {
+                        setGalleryFiles(
+                          items
+                            .filter((i) => i.type === "file")
+                            .map((i) => i.file)
+                        );
+                        setExistingImages(
+                          items
+                            .filter((i) => i.type === "url")
+                            .map((i) => i.url)
+                        );
+                      }}
                     />
                   </FormItem>
                 )}
               />
             </div>
 
-            {/* Sizes Form */}
             <div className="flex-1 mt-5 md:mt-0 flex flex-col gap-5">
               {/* Category */}
 
@@ -229,16 +287,17 @@ function page() {
                                 <Checkbox
                                   checked={field.value?.includes(item.id)}
                                   onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([
-                                          ...field.value,
-                                          item.id,
-                                        ])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== item.id
-                                          )
-                                        );
+                                    const current = field.value || [];
+
+                                    if (checked) {
+                                      field.onChange([...current, item.id]);
+                                    } else {
+                                      field.onChange(
+                                        current.filter(
+                                          (value) => value !== item.id
+                                        )
+                                      );
+                                    }
                                   }}
                                 />
                               </FormControl>
@@ -255,68 +314,57 @@ function page() {
                 )}
               />
 
-              {form.watch("hasSizes") ? (
-                <FormField
-                  control={form.control}
-                  name="sizesAvailable"
-                  render={({ field }) => (
-                    <SizesForm
-                      value={field.value || []}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="stock"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Stock</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex gap-2 mb-2 items-center">
+                  <Controller
+                    control={form.control}
+                    name={`sizesAvailable.${index}.size`}
+                    render={({ field }) => (
+                      <Input placeholder="Size" {...field} />
+                    )}
+                  />
+                  <Controller
+                    control={form.control}
+                    name={`sizesAvailable.${index}.stock`}
+                    render={({ field }) => (
+                      <Input
+                        type="number"
+                        placeholder="Stock"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    )}
+                  />
+                  <Button variant="ghost" onClick={() => remove(index)}>
+                    Delete
+                  </Button>
+                </div>
+              ))}
+              {oldProduct?.hasSizes && (
+                <Button
+                  onClick={() => append({ size: "", stock: 0 })}
+                  className="mt-2"
+                  variant={"secondary"}
+                >
+                  + Add Size
+                </Button>
               )}
+
               <FormField
                 control={form.control}
-                name="hasSizes"
+                name="stock"
                 render={({ field }) => (
-                  <FormItem className="flex items-center gap-2">
+                  <FormItem>
+                    <FormLabel>Stock</FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(!!checked);
-
-                          if (checked) {
-                            // Initialize sizesAvailable if empty
-                            const current = form.getValues("sizesAvailable");
-                            if (
-                              !Array.isArray(current) ||
-                              current.length === 0
-                            ) {
-                              form.setValue("sizesAvailable", [
-                                { size: "", stock: 0 },
-                              ]);
-                            }
-                          } else {
-                            // Clear sizesAvailable when switching off
-                            form.setValue("sizesAvailable", []);
-                          }
-                        }}
+                      <Input
+                        type="number"
+                        disabled={oldProduct?.hasSizes}
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
-                    <FormLabel>Has Sizes?</FormLabel>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -325,13 +373,13 @@ function page() {
 
           {/* Submit Button */}
 
-          {productLoading ? (
+          {editProductLoading ? (
             <Button disabled className="w-full">
-              <Loader className="animate-spin"></Loader> Adding product..
+              <Loader className="animate-spin"></Loader> Editing product..
             </Button>
           ) : (
             <Button type="submit" className="w-full">
-              Add Product
+              Edit Product
             </Button>
           )}
         </form>
@@ -340,4 +388,4 @@ function page() {
   );
 }
 
-export default page;
+export default EditProduct;

@@ -23,23 +23,26 @@ function ProductCard({ product }: ProductCardProps) {
         ratio={369 / 461}
         className="group relative overflow-hidden "
       >
-        {/* Default image */}
-        <Image
-          src={galleryImages[0]}
-          alt={`${title} default`}
-          fill
-          priority
-          className="object-cover absolute inset-0 transition-opacity duration-500 ease-in-out group-hover:opacity-0"
-        />
+        {/* Default Image */}
 
-        {/* Hover image */}
-        {galleryImages[1] && (
-          <Image
-            src={galleryImages[1]}
-            alt={`${title} hover`}
-            fill
-            priority
-            className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100"
+        {galleryImages.length > 1 ? (
+          <>
+            <img
+              src={galleryImages[0]}
+              alt="default"
+              className="w-full h-full object-cover transition-opacity duration-300 ease-in-out group-hover:opacity-0"
+            />
+            <img
+              src={galleryImages[1]}
+              alt="hover"
+              className="absolute top-0 left-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+            />{" "}
+          </>
+        ) : (
+          <img
+            src={galleryImages[0]}
+            alt="default"
+            className="w-full h-full object-cover "
           />
         )}
       </AspectRatio>

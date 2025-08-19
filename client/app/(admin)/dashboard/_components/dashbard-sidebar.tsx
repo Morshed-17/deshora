@@ -15,6 +15,7 @@ import {
   Settings,
   ShoppingCart,
   Tags,
+  House,
   ChartBar,
   Users,
 } from "lucide-react";
@@ -30,6 +31,11 @@ const data = {
   },
 
   navMain: [
+    {
+      title: "Visit Site",
+      url: "/",
+      icon: House // 📦 Products
+    },
     {
       title: "Anlytics",
       url: "/dashboard",
