@@ -8,7 +8,22 @@ import { IProduct } from "@/types/type";
 import React from "react";
 
 function NewArrivals() {
-  const { data, isLoading, error } = useGetAllProductsQuery(undefined);
+  const queryObject = {
+    sortBy: "-createdAt",
+    page: 1,
+    limit: 10,
+  };
+  // Convert arrays to comma-separated strings
+  const formattedQuery = Object.fromEntries(
+    Object.entries(queryObject).map(([key, value]) => {
+      if (Array.isArray(value)) return [key, value.join(",")];
+      return [key, String(value)];
+    })
+  );
+
+  const params = new URLSearchParams(formattedQuery);
+
+  const { data, isLoading, error } = useGetAllProductsQuery(params.toString());
   const products = data?.data?.products;
   return (
     <Container full>
@@ -18,8 +33,6 @@ function NewArrivals() {
           <ProductCard product={product} key={product._id} />
         ))}
       </div>
-
-     
     </Container>
   );
 }

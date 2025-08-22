@@ -64,12 +64,13 @@ function page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "Men trouser",
-      color: "Blue",
-      description: "Onek valo",
+      title: "",
+      color: "",
+      description:
+        "Deshora Shirts combine style and comfort for everyday wear. Crafted with quality fabrics and attention to detail, they offer a perfect fit and lasting durability. From casual outings to semi-formal occasions, our shirts keep you looking sharp while embracing modern Bangladeshi fashion",
       price: 0,
       galleryImages: null, // default for file input
-      hasSizes: false,
+      hasSizes: true,
       categoryIds: [],
       stock: 0,
       sizesAvailable: [],

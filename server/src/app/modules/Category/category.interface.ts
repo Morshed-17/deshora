@@ -1,11 +1,12 @@
-import { Schema, Types } from "mongoose"
+import { Types } from "mongoose";
 
 export interface TCategory {
-    title: string
-    slug: string
-    description: string
-    children?: Types.ObjectId[];
-    parent?: Types.ObjectId | null
-    isDeleted: boolean
-    isNested: boolean
+  image?: string;
+  title: string;
+  slug: string;
+  description: string;
+  children?: Types.ObjectId[];
+  parent?: Types.ObjectId | null;
+  isNested: boolean;
+  productCount?: number
 }

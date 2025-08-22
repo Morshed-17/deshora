@@ -11,10 +11,7 @@ const getAllProducts: RequestHandler = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message:
-        result.products.length > 0
-          ? "Products retrieved successfully!"
-          : "No categories found",
+      message: "product retrieved successfully",
       data: result,
     });
   }

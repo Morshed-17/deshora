@@ -8,12 +8,9 @@ const getAllCategories: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await CategoryService.getAllCategories();
     sendResponse(res, {
-      statusCode: result.length > 0 ? httpStatus.OK : httpStatus.NOT_FOUND,
+      statusCode: httpStatus.OK,
       success: true,
-      message:
-        result.length > 0
-          ? "Categories retrieved successfully!"
-          : "No categories found",
+      message: "Categories retrieved successfully!",
       data: result,
     });
   }
@@ -21,7 +18,14 @@ const getAllCategories: RequestHandler = catchAsync(
 
 const createCategory: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await CategoryService.createCategory(req.body);
+    const files = req.files as {
+      file?: Express.Multer.File[];
+    };
+
+    const result = await CategoryService.createCategory(
+      req.body,
+      files.file as Express.Multer.File[]
+    );
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
@@ -31,11 +35,33 @@ const createCategory: RequestHandler = catchAsync(
   }
 );
 
+const getSingleCategory: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { slug } = req.params;
+
+    const result = await CategoryService.getSingleCategory(slug);
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Category retrived successfully!",
+      data: result,
+    });
+  }
+);
+
 const updateCategory: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log(id);
-    const result = await CategoryService.updateCategory(id, req.body);
+    const files = req.files as {
+      file?: Express.Multer.File[];
+    };
+
+    const result = await CategoryService.updateCategory(
+      id,
+      req.body,
+      files.file as Express.Multer.File[]
+    );
+
     sendResponse(res, {
       statusCode: httpStatus.CREATED,
       success: true,
@@ -45,8 +71,24 @@ const updateCategory: RequestHandler = catchAsync(
   }
 );
 
+const deleteCategory: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    await CategoryService.deleteCategory(id);
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Category deleted successfully!",
+      data: null,
+    });
+  }
+);
+
 export const CategoryController = {
   createCategory,
   updateCategory,
   getAllCategories,
+  getSingleCategory,
+  deleteCategory,
 };

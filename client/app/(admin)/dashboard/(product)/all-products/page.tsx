@@ -45,13 +45,18 @@ function AllProducts() {
       toast.success("Product deleted successfully");
     } catch (err) {
       console.error("Failed to delete the product:", err);
-      toast.error("Something went wrong")
+      toast.error("Something went wrong");
     }
   };
 
   return (
     <div>
-      <PageTitle>All Products</PageTitle>
+      <div className="flex items-center justify-between">
+        <PageTitle>All Products</PageTitle>
+        <Link href={"/dashboard/create-product"}>
+          <Button variant={"outline"}>Add New Product</Button>
+        </Link>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -65,69 +70,80 @@ function AllProducts() {
           </TableRow>
         </TableHeader>
 
-        <TableBody> 
-          
-         
-          {products?.map((product: IProduct) => (
-            <TableRow key={product._id}>
-              <TableCell>
-                <Image
-                  src={product.galleryImages[0]}
-                  width={50}
-                  height={50}
-                  alt={product.title}
-                />
-              </TableCell>
-              <TableCell>{product.title}</TableCell>
-              <TableCell>{product.sku}</TableCell>
-              <TableCell>{product.price}</TableCell>
-              <TableCell>{product.stock}</TableCell>
-              <TableCell>
-                {product.categoryIds.map((category) => (
-                  <span key={category._id} className="text-xs">
-                    {category.title} <br />
-                  </span>
-                ))}
-              </TableCell>
-              <TableCell className="flex gap-2">
-                {/* <Button onClick={() => handleView(product)}>
+        <TableBody>
+          {products?.length > 0 ? (
+            <>
+              {products?.map((product: IProduct) => (
+                <TableRow key={product._id}>
+                  <TableCell>
+                    <Image
+                      src={product.galleryImages[0]}
+                      width={50}
+                      height={50}
+                      alt={product.title}
+                    />
+                  </TableCell>
+                  <TableCell>{product.title}</TableCell>
+                  <TableCell>{product.sku}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>
+                    {product.categoryIds.map((category) => (
+                      <span key={category._id} className="text-xs">
+                        {category.title} <br />
+                      </span>
+                    ))}
+                  </TableCell>
+                  <TableCell className="flex gap-2">
+                    {/* <Button onClick={() => handleView(product)}>
                   <Eye />
                 </Button> */}
-                <Link href={`/dashboard/edit-product/${product.sku}`}>
-                  <Button variant={"ghost"}>
-                    <Edit />
-                  </Button>
-                </Link>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size={"icon"}>
-                      <Trash />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        Are you sure you want to delete this product?
-                      </DialogTitle>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant={"outline"}>Cancel</Button>
-                      </DialogClose>
-                      <DialogClose asChild>
-                        <Button
-                          variant="destructive"
-                          onClick={() => handleDelete(product._id)}
-                        >
-                          Delete
+                    <Link href={`/dashboard/edit-product/${product.sku}`}>
+                      <Button variant={"ghost"}>
+                        <Edit />
+                      </Button>
+                    </Link>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size={"icon"}>
+                          <Trash />
                         </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Are you sure you want to delete this product?
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant={"outline"}>Cancel</Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                            <Button
+                              variant="destructive"
+                              onClick={() => handleDelete(product._id)}
+                            >
+                              Delete
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={7}
+                className="text-center bg-gray-100 p-6 rounded-lg "
+              >
+                No products found
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>

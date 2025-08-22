@@ -1,7 +1,6 @@
 // category model
 import { model, Schema } from "mongoose";
 import { TCategory } from "./category.interface";
-import slugify from "slugify";
 
 const categorySchema = new Schema<TCategory>(
   {
@@ -27,9 +26,9 @@ const categorySchema = new Schema<TCategory>(
       type: String,
       required: true,
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
+    image: {
+      type: String,
+      required: true,
     },
   },
   {
@@ -45,6 +44,13 @@ categorySchema.virtual("children", {
   ref: "Category",
   localField: "_id",
   foreignField: "parent",
+});
+
+categorySchema.virtual("productCount", {
+  ref: "Product",
+  localField: "_id",
+  foreignField: "categoryIds",
+  count: true,
 });
 
 // Add pre-save hook for slug generation

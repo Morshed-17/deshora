@@ -33,14 +33,6 @@ class QueryBuilder<T> {
 
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    // Handle categoryId for single or multiple IDs
-    if (queryObj.categoryId && typeof queryObj.categoryId === "string") {
-      if (queryObj.categoryId.includes(",")) {
-        queryObj.categoryId = { $in: queryObj.categoryId.split(",") };
-      }
-      // else keep single categoryId as string for exact match
-    }
-
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
 
     return this;

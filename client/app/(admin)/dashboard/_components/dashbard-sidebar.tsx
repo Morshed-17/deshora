@@ -34,7 +34,7 @@ const data = {
     {
       title: "Visit Site",
       url: "/",
-      icon: House // 📦 Products
+      icon: House, // 📦 Products
     },
     {
       title: "Anlytics",
@@ -57,15 +57,9 @@ const data = {
       ],
     },
     {
-      title: "Category",
-      url: "#",
+      title: "Categories",
+      url: "/dashboard/all-categories",
       icon: Tags, // 🏷 Categories
-      items: [
-        {
-          title: "All Categories",
-          url: "/dashboard/all-categories",
-        },
-      ],
     },
     {
       title: "Orders",

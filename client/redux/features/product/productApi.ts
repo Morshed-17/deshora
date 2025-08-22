@@ -3,8 +3,13 @@ import { baseApi } from "@/redux/api/baseApi";
 const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllProducts: builder.query({
-      query: () => "/products",
-      providesTags: ["Products"]
+      query: (queryString: string) => {
+        return {
+          url: `/products?${queryString}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Products"],
     }),
     createNewProduct: builder.mutation<any, FormData>({
       query: (formData) => {
@@ -24,7 +29,7 @@ const productApi = baseApi.injectEndpoints({
       query: (id: string) => {
         return { url: `/products/${id}`, method: "DELETE" };
       },
-      invalidatesTags: ["Products"],
+      invalidatesTags: ["Products", "Categories"],
     }),
     editAProduct: builder.mutation<any, { sku: string; formData: FormData }>({
       query: ({ sku, formData }) => {
@@ -34,7 +39,7 @@ const productApi = baseApi.injectEndpoints({
           body: formData,
         };
       },
-      invalidatesTags: ["Products"],
+      invalidatesTags: ["Products", "Categories"],
     }),
   }),
 });

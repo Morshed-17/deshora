@@ -12,6 +12,7 @@ export interface TUser {
 export interface ICategory {
   children: any[]; // Change `any[]` to a stricter type if you know the shape of children
   createdAt: string; // ISO date string
+  image: string;
   description: string;
   id: string;
   isDeleted: boolean;
@@ -20,6 +21,7 @@ export interface ICategory {
   slug: string;
   title: string;
   updatedAt: string; // ISO date string
+  productCount: number;
   __v: number;
   _id: string;
 }
@@ -32,12 +34,12 @@ export interface IProduct {
   _id: string;
   title: string;
   description: string;
-  categoryIds: ICategory[] ;
+  categoryIds: ICategory[];
   color: string;
   price: number;
   stock: number;
   galleryImages: string[];
-  hasSizes: boolean
+  hasSizes: boolean;
   sizesAvailable: TSize[];
   sku: string;
   createdAt: string; // ISO date string

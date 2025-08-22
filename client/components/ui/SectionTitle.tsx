@@ -6,7 +6,7 @@ interface Props {
 
 function SectionTitle({ children }: Props) {
   return (
-    <div className="text-xl md:text-2xl lg:text-4xl font-bold text-foreground pt-8 pb-6 text-center">
+    <div className="text-2xl font-medium md:text-2xl lg:text-4xl md:font-bold text-foreground pt-8 pb-6 text-center">
       {children}
     </div>
   );
