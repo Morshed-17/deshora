@@ -21,11 +21,13 @@ import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 import DeliveryReturnPopup from "./_component/DeliveryAndReturnPopup";
 import SizeGuidePopup from "./_component/SizeGuidePopup";
+import { useAppDispatch } from "@/redux/hooks";
+import { addtoCart, clearCart } from "@/redux/features/cart/cartSlice";
 
 export default function ProductDetailsPage() {
+  const dispatch = useAppDispatch();
+
   const [selectedSize, setSelectedSize] = useState<string>("");
-  console.log(selectedSize);
-  // for active thumbnail border
   const { sku } = useParams<{ sku: string }>();
   const { data, isLoading, error } = useGetSingleProductBySkuQuery(sku);
 
@@ -33,6 +35,29 @@ export default function ProductDetailsPage() {
   if (error) return <p>Failed to load product.</p>;
 
   const product = data?.data as IProduct;
+
+  const handleAddToCart = () => {
+    const quantity = 1;
+    const size = selectedSize;
+
+    if (product.hasSizes && !selectedSize.length) {
+      return toast.error("Please Select Size, Before adding to Bag !");
+    }
+
+    dispatch(
+      addtoCart({
+        _id: product._id,
+        price: product.price,
+        title: product.title,
+        sku: product.sku,
+        color: product.color,
+        image: product.galleryImages[0],
+        quantity,
+        size,
+      })
+    );
+    // dispatch(clearCart())
+  };
 
   return (
     <div>
@@ -91,18 +116,20 @@ export default function ProductDetailsPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="text-sm md:text-base hover:bg-primary text-white font-medium hoverEffect px-6 py-3 mt-4 bg-gray-800 rounded-xs flex items-center gap-2">
+            <button
+              onClick={handleAddToCart}
+              className="text-sm md:text-base hover:bg-primary text-white font-medium hoverEffect px-6 py-3 mt-4 bg-gray-800 rounded-xs flex items-center gap-2"
+            >
               ADD TO BAG
               <ShoppingBag size={14} />
             </button>
             <button className="text-sm md:text-base bg-primary text-white font-medium hoverEffect px-6 py-3 mt-4 hover:bg-gray-800 rounded-xs ">
               BUY NOW
-              
             </button>
           </div>
           <div className="flex gap-6">
-            <DeliveryReturnPopup/>
-          <SizeGuidePopup/>
+            <DeliveryReturnPopup />
+            <SizeGuidePopup />
           </div>
 
           <div className="mt-6">

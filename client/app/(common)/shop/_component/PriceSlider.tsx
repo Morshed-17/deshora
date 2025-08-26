@@ -21,9 +21,7 @@ export const PriceSlider: React.FC<PriceSliderProps> = ({
 }) => {
   return (
     <div className="w-full ">
-      <Label className="mb-2">
-        Price Range: {value[0]} Tk - {value[1]} Tk
-      </Label>
+     
       <Slider
         value={value}
         min={min}

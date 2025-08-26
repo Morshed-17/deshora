@@ -97,7 +97,10 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   }
 
   const [result, total] = await Promise.all([
-    minMaxQuery.find(queryObj),
+    minMaxQuery.find(queryObj).populate({
+      path: "categoryIds",
+      select: "title slug"
+    }),
     Product.countDocuments({
       ...minMaxQuery.getFilter(), // includes your price + search filters
       ...queryObj, // includes categoryIds and others

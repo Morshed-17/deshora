@@ -23,6 +23,10 @@ import { PriceSlider } from "./_component/PriceSlider";
 import { Input } from "@/components/ui/input";
 
 export default function ProductsPage() {
+  const [stockFilter, setStockFilter] = useState<
+    "in-stock" | "out-of-stock" | ""
+  >("");
+
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -49,14 +53,35 @@ export default function ProductsPage() {
   const [selectedCategories, setSelectedCategories] =
     useState<string[]>(initialCategories);
 
-  // --- Sync checkbox state to URL ---
+  // --- Sync ALL filters to URL ---
   useEffect(() => {
-    const params = new URLSearchParams({
-      searchTerm: searchTerm || "",
-      category: selectedCategories.join(","),
-    });
+    const params = new URLSearchParams();
+
+    if (searchTerm) params.set("searchTerm", searchTerm);
+    if (selectedCategories.length > 0)
+      params.set("category", selectedCategories.join(","));
+    if (sortBy && sortBy !== "no-sorting") params.set("sortBy", sortBy);
+    if (priceRange[0] > 0) params.set("min", String(priceRange[0]));
+    if (priceRange[1] < 100000) params.set("max", String(priceRange[1]));
+
     router.replace(`?${params.toString()}`, { scroll: false });
-  }, [selectedCategories, searchTerm]);
+  }, [selectedCategories, searchTerm, sortBy, priceRange]);
+
+  // --- Restore from URL ---
+  useEffect(() => {
+    const urlCategories = searchParams.get("category")?.split(",") ?? [];
+    const urlSort = searchParams.get("sortBy") || "no-sorting";
+    const urlMin = Number(searchParams.get("min") || 0);
+    const urlMax = Number(searchParams.get("max") || 100000);
+
+    if (urlCategories.join(",") !== selectedCategories.join(",")) {
+      setSelectedCategories(urlCategories);
+    }
+    if (urlSort !== sortBy) setSortBy(urlSort);
+    if (urlMin !== priceRange[0] || urlMax !== priceRange[1]) {
+      setPriceRange([urlMin, urlMax]);
+    }
+  }, [searchParams]);
 
   // --- Toggle category selection ---
   const toggle = (slug: string, checked: boolean) => {
@@ -65,8 +90,14 @@ export default function ProductsPage() {
     );
   };
 
+  // --- Stock filters ---
+
   // --- Reset Filters ---
-  const resetFilters = () => setSelectedCategories([]);
+  const resetFilters = () => {
+    setStockFilter("");
+    setPriceRange([0, 100000]);
+    setSelectedCategories([]);
+  };
 
   // --- Convert slugs to IDs for API query ---
   const selectedCategoryIds = selectedCategories
@@ -157,7 +188,56 @@ export default function ProductsPage() {
             ))}
           </div>
 
+          <h2 className="font-semibold text-lg my-4 uppercase">Availability</h2>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={"in-stock"}
+                value={stockFilter}
+                // checked={}
+                // onCheckedChange={(c) => }
+              />
+              <Label className="text-sm" htmlFor={"in-stock"}>
+                In Stock
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={"out-of-stock"}
+                value={stockFilter}
+                // checked={}
+                // onCheckedChange={(c) => }
+              />
+              <Label className="text-sm" htmlFor={"Out of stock"}>
+                Out of Stock
+              </Label>
+            </div>
+          </div>
+
           <div className="mt-4">
+            <div className="flex gap-2 mb-4">
+              <div>
+                <Label className="mb-2">Min</Label>
+                <Input
+                  type="number"
+                  value={priceRange[0]}
+                  onChange={(e) =>
+                    setPriceRange([Number(e.target.value), priceRange[1]])
+                  }
+                />
+              </div>
+              <div>
+                <Label className="mb-2">Max</Label>
+                <Input
+                  type="number"
+                  value={priceRange[1]}
+                  onChange={(e) =>
+                    setPriceRange([priceRange[0], Number(e.target.value)])
+                  }
+                />
+              </div>
+            </div>
             <PriceSlider
               min={0}
               max={100000}

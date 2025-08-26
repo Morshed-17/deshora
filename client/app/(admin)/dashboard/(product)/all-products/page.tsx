@@ -34,7 +34,8 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 function AllProducts() {
-  const { data } = useGetAllProductsQuery(undefined);
+  const searchParams = new URLSearchParams({});
+  const { data } = useGetAllProductsQuery(searchParams.toString());
   const products = data?.data?.products;
   const [deleteProduct, { isLoading }] = useDeleteAProductMutation();
 
@@ -48,6 +49,7 @@ function AllProducts() {
       toast.error("Something went wrong");
     }
   };
+  
 
   return (
     <div>
@@ -88,7 +90,7 @@ function AllProducts() {
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>
-                    {product.categoryIds.map((category) => (
+                    {product.categoryIds.map((category, index) => (
                       <span key={category._id} className="text-xs">
                         {category.title} <br />
                       </span>
