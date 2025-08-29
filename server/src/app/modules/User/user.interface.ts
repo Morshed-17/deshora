@@ -6,10 +6,11 @@ export interface TUser {
   name: string;
   email: string;
   password: string;
+  phone: string;
   role: "admin" | "user";
   isActive: boolean;
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface UserModel extends Model<TUser> {
@@ -19,4 +20,4 @@ export interface UserModel extends Model<TUser> {
   ): Promise<Boolean>;
 }
 
-export type TUserRole = keyof typeof USER_ROLE
+export type TUserRole = keyof typeof USER_ROLE;

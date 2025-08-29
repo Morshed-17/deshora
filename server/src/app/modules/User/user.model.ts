@@ -17,12 +17,15 @@ const userSchema = new Schema<TUser>(
     password: {
       type: String,
       required: true,
-      select: false
+      select: false,
     },
     role: {
       type: String,
       enum: ["admin", "user"],
       default: "user",
+    },
+    phone: {
+      type: String,
     },
     isActive: {
       type: Boolean,
@@ -33,7 +36,6 @@ const userSchema = new Schema<TUser>(
 );
 
 userSchema.pre("save", async function (next) {
-
   this.password = await bcrypt.hash(
     this.password,
     Number(config.bcrypt_salt_rounds)

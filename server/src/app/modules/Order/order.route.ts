@@ -9,7 +9,6 @@ const router = Router();
 
 router.post(
   "/",
-  auth("user", "admin"),
   validateRequest(createOrderSchema),
   OrderController.createOrder
 );

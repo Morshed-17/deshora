@@ -49,6 +49,7 @@ const loginUser = async (credentials: { password: string; email: string }) => {
     name: user.name, // string
     email: user.email, // string
     role: user.role, // string ('admin')
+    phone: user.phone,
     isActive: user.isActive, // boolean
     createdAt: user.createdAt, // Date
     updatedAt: user.updatedAt, // Date

@@ -1,17 +1,20 @@
 import AppError from "../../errors/AppError";
 
 import httpStatus from "http-status";
-import { TOrder } from "./order.interface";
+import { TGuestInfo, TOrder } from "./order.interface";
 import Order from "./order.model";
 import Product from "../Product/product.model";
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
+import User from "../User/user.model";
+import { calculateDeliveryCharge } from "./order.utils";
 
-const createOrder = async (userId: string, payload: Partial<TOrder>) => {
+const createOrder = async (payload: Partial<TOrder>) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const user = userId;
+    const user = payload.user;
+
     const orderItems = await Promise.all(
       payload.items!.map(async (item) => {
         const product = await Product.findById(item.product).session(session);
@@ -69,19 +72,29 @@ const createOrder = async (userId: string, payload: Partial<TOrder>) => {
       })
     );
 
+    // Delivery charge =
+
+    const deliveryCharge = calculateDeliveryCharge(
+      payload.deliveryZone || "inside-dhaka"
+    );
+
     // Create Order Here
-    const totalAmount = orderItems.reduce((sum, item) => {
-      const finalPrice = item.price - (item.discount || 0);
-      return sum + finalPrice * item.quantity;
-    }, 0);
+    const totalAmount =
+      orderItems.reduce((sum, item) => {
+        const finalPrice = item.price - (item.discount || 0);
+        return sum + finalPrice * item.quantity;
+      }, 0) + deliveryCharge;
 
     const orderData: TOrder = {
       items: orderItems,
-      user,
+      user: user ? user : null,
+      guestInfo: payload.guestInfo!,
       deliveryAddress: payload.deliveryAddress!,
       totalAmount,
       paymentMethod: payload.paymentMethod || "COD",
       status: "PENDING",
+      deliveryZone: payload.deliveryZone || "inside-dhaka",
+      deliveryCharge,
     };
 
     const result = await Order.create(orderData);

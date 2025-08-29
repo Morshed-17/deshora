@@ -1,6 +1,6 @@
 // category model
 import { model, Schema } from "mongoose";
-import { TOrder, TOrderItem } from "./order.interface";
+import { TGuestInfo, TOrder, TOrderItem } from "./order.interface";
 
 const OrderItemSchema = new Schema<TOrderItem>(
   {
@@ -16,9 +16,16 @@ const OrderItemSchema = new Schema<TOrderItem>(
   { _id: false } // prevents creating separate IDs for each item
 );
 
+const GuestInfoSchema = new Schema<TGuestInfo>({
+  name: { type: String, required: true },
+  email: { type: String, default: null },
+  phone: { type: String, required: true },
+});
+
 const OrderSchema = new Schema<TOrder>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId || null, ref: "User", default: null },
+    guestInfo: { type: GuestInfoSchema, required: true },
     items: { type: [OrderItemSchema], required: true },
     deliveryAddress: { type: String, required: true },
     paymentMethod: {
@@ -32,6 +39,7 @@ const OrderSchema = new Schema<TOrder>(
       enum: ["PENDING", "CONFIRMED", "DELIVERED", "CANCELLED"],
       default: "PENDING",
     },
+    deliveryCharge: { type: Number },
   },
   { timestamps: true }
 );

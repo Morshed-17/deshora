@@ -8,15 +8,24 @@ export interface TOrderItem {
   price: number;
   discount: number;
   quantity: number;
-  color: string
+  color: string;
   size?: string; // optional if product has sizes
 }
 
-export type TOrder= {
-  user: Types.ObjectId | string;
+export interface TGuestInfo {
+  name: string;
+  phone: string;
+  email: string;
+}
+
+export type TOrder = {
+  user: Types.ObjectId | string | null;
+  guestInfo: TGuestInfo;
   items: TOrderItem[];
   deliveryAddress: string;
   paymentMethod: "COD" | "SSLCommerz";
   totalAmount: number;
   status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED";
-}
+  deliveryCharge: number;
+  deliveryZone: "inside-dhaka" | "outside-dhaka";
+};

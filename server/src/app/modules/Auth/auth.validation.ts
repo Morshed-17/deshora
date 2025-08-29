@@ -9,6 +9,7 @@ const registerValidationSchema = z.object({
     password: z
       .string("Password is required")
       .min(6, "Password must be atleast 6 characters"),
+    phone: z.string().min(11).max(11).optional(),
 
     role: z.enum(["admin", "user"]).default("user"),
     isActive: z.boolean().default(true),
