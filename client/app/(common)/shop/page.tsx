@@ -10,8 +10,12 @@ import { FilterSidebar } from "./_component/FilterSidebar";
 import ProductCard from "@/components/common/Product/ProductCard";
 import NoProductFound from "./_component/NoProductFound";
 import { SortDropdown } from "@/components/ui/SortDropdown";
+import { usePagination } from "@/hooks/usePagination";
+import PaginationControls from "@/components/ui/PaginationControls";
 
 export default function ProductsPage() {
+  const { page, setPage, limit } = usePagination(8);
+
   const {
     stockFilter,
     setStockFilter,
@@ -42,15 +46,23 @@ export default function ProductsPage() {
     max?: number;
     searchTerm?: string;
     stock?: string;
-  } = {};
+    page?: number;
+    limit?: number;
+  } = {
+    page,
+    limit
+  };
 
-  if (selectedCategoryIds.length > 0) queryObject.categoryIds = selectedCategoryIds;
+  if (selectedCategoryIds.length > 0)
+    queryObject.categoryIds = selectedCategoryIds;
   if (sortBy && sortBy !== "no-sorting") queryObject.sortBy = sortBy;
   if (searchTerm) queryObject.searchTerm = searchTerm;
   if (stockFilter) queryObject.stock = stockFilter;
 
   queryObject.min = priceRange[0];
   queryObject.max = priceRange[1];
+  queryObject.page = page;
+  queryObject.limit = limit;
 
   // Format query for API
   const formattedQuery = Object.fromEntries(
@@ -64,7 +76,7 @@ export default function ProductsPage() {
   const { data: productsData } = useGetAllProductsQuery(params.toString());
   const products = productsData?.data?.products;
 
-
+  const meta = productsData?.data.meta;
 
   return (
     <div className="px-4 md:px-8 lg:px-12 min-h-screen">
@@ -122,6 +134,8 @@ export default function ProductsPage() {
               <NoProductFound />
             </div>
           )}
+
+          <PaginationControls meta={meta} page={page} setPage={setPage} />
         </main>
       </div>
     </div>

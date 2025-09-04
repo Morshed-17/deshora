@@ -5,7 +5,7 @@ const productApi = baseApi.injectEndpoints({
     getAllProducts: builder.query({
       query: (queryString: string) => {
         return {
-          url: `/products?${queryString}`,
+          url: `/products?${queryString ? queryString : ""}`,
           method: "GET",
         };
       },

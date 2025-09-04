@@ -20,7 +20,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-import { Row } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -32,9 +31,18 @@ import {
 import Image from "next/image";
 import { toast } from "sonner";
 import Link from "next/link";
+import { usePagination } from "@/hooks/usePagination";
+
+import PaginationControls from "@/components/ui/PaginationControls";
 
 function AllProducts() {
-  const searchParams = new URLSearchParams({});
+  const { page, setPage, limit } =
+    usePagination(5);
+
+  const searchParams = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
   const { data } = useGetAllProductsQuery(searchParams.toString());
   const products = data?.data?.products;
   const [deleteProduct, { isLoading }] = useDeleteAProductMutation();
@@ -49,7 +57,8 @@ function AllProducts() {
       toast.error("Something went wrong");
     }
   };
-  
+
+  const meta = data?.data?.meta;
 
   return (
     <div>
@@ -90,7 +99,7 @@ function AllProducts() {
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>
-                    {product.categoryIds.map((category, index) => (
+                    {product.categoryIds.map((category) => (
                       <span key={category._id} className="text-xs">
                         {category.title} <br />
                       </span>
@@ -148,6 +157,7 @@ function AllProducts() {
           )}
         </TableBody>
       </Table>
+      <PaginationControls meta={meta} page={page} setPage={setPage} />
     </div>
   );
 }

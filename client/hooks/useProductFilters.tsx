@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export type SortOption = "price" | "-price" | "createdAt" | "-createdAt" | "no-sorting";
+export type SortOption =
+  | "price"
+  | "-price"
+  | "createdAt"
+  | "-createdAt"
+  | "no-sorting";
 export type StockFilter = "in-stock" | "out-of-stock" | "";
 
 export function useProductFilters() {
@@ -16,6 +21,9 @@ export function useProductFilters() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     searchParams.get("category")?.split(",") ?? []
   );
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+
   const searchTerm = searchParams.get("searchTerm") || "";
 
   // Sync to URL
@@ -23,14 +31,26 @@ export function useProductFilters() {
     const params = new URLSearchParams();
 
     if (searchTerm) params.set("searchTerm", searchTerm);
-    if (selectedCategories.length > 0) params.set("category", selectedCategories.join(","));
+    if (selectedCategories.length > 0)
+      params.set("category", selectedCategories.join(","));
     if (sortBy && sortBy !== "no-sorting") params.set("sortBy", sortBy);
     if (priceRange[0] > 0) params.set("min", String(priceRange[0]));
     if (priceRange[1] < 100000) params.set("max", String(priceRange[1]));
     if (stockFilter) params.set("stock", stockFilter);
+    if (page) params.set("page", String(page));
+    if (limit) params.set("limit", String(limit));
 
     router.replace(`?${params.toString()}`, { scroll: false });
-  }, [selectedCategories, sortBy, priceRange, stockFilter, searchTerm, router]);
+  }, [
+    selectedCategories,
+    sortBy,
+    priceRange,
+    stockFilter,
+    searchTerm,
+    router,
+    page,
+    limit,
+  ]);
 
   // Restore from URL when page reloads / navigating back
   useEffect(() => {
@@ -41,6 +61,8 @@ export function useProductFilters() {
       Number(searchParams.get("max") || 100000),
     ]);
     setStockFilter((searchParams.get("stock") as StockFilter) || "");
+    setPage(Number(searchParams.get("page") ));
+    setLimit(Number(searchParams.get("limit")));
   }, [searchParams]);
 
   const resetFilters = () => {
