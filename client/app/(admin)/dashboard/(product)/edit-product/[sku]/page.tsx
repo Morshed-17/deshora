@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,17 +18,15 @@ import { Textarea } from "@/components/ui/textarea";
 import ImageUploader, { GalleryItem } from "@/components/ui/ImageUploader";
 
 import {
-  useCreateNewProductMutation,
   useEditAProductMutation,
-  useGetAllProductsQuery,
   useGetSingleProductBySkuQuery,
 } from "@/redux/features/product/productApi";
 import { toast } from "sonner";
 import { useGetAllCategoriesQuery } from "@/redux/features/category/categoryApi";
 import { Loader } from "lucide-react";
-import { ICategory, IProduct } from "@/types/type";
+import { ICategory } from "@/types/type";
 import { Checkbox } from "@/components/ui/checkbox";
-import SizesForm from "../../create-product/size-form";
+
 import { useParams } from "next/navigation";
 
 const formSchema = z.object({
@@ -345,6 +342,7 @@ function EditProduct() {
                   onClick={() => append({ size: "", stock: 0 })}
                   className="mt-2"
                   variant={"secondary"}
+                  type="button"
                 >
                   + Add Size
                 </Button>

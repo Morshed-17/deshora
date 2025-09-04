@@ -18,9 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, XIcon } from "lucide-react";
 import { PriceSlider } from "./_component/PriceSlider";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function ProductsPage() {
   const [stockFilter, setStockFilter] = useState<
@@ -160,8 +161,14 @@ export default function ProductsPage() {
                 <SelectItem value="-price">Price High To Low</SelectItem>
                 <SelectItem value="-createdAt">Newest</SelectItem>
                 <SelectItem value="createdAt">Oldest</SelectItem>
-                <SelectItem value="no-sorting" className="text-primary/60">
-                  Clear Sorting
+                <SelectItem value="no-sorting" className="text-primary">
+                <Button
+                  value="no-sorting"
+                  variant={"ghost"}
+                  className="text-primary w-full text-xs flex justify-start"
+                >
+                  <XIcon className="text-primary" /> Clear Sorting
+                </Button>
                 </SelectItem>
               </SelectGroup>
             </SelectContent>

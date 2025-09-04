@@ -73,13 +73,14 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
             variant="ghost"
             onClick={() => removeSize(i)}
             className="mt-5"
+            type="button"
           >
             Delete
           </Button>
         </div>
       ))}
 
-      <Button onClick={addSize} className="mt-2" variant={"secondary"}>
+      <Button onClick={addSize} className="mt-2" variant={"secondary"} type="button">
         + Add Size
       </Button>
     </div>
