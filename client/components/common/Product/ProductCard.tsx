@@ -1,10 +1,9 @@
-import Taka from "@/components/ui/taka";
 import { IProduct } from "@/types/type";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { Heart } from "lucide-react";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 
 interface ProductCardProps {
   product: IProduct;
@@ -27,22 +26,25 @@ function ProductCard({ product }: ProductCardProps) {
 
         {galleryImages.length > 1 ? (
           <>
-            <img
+            <Image
+              fill
               src={galleryImages[0]}
               alt="default"
-              className="w-full h-full object-cover transition-opacity duration-300 ease-in-out group-hover:opacity-0"
+              className="w-full h-full object-contain transition-opacity duration-300 ease-in-out group-hover:opacity-0"
             />
-            <img
+            <Image
               src={galleryImages[1]}
               alt="hover"
-              className="absolute top-0 left-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
+              fill
+              className="absolute top-0 left-0 w-full h-full object-contain opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"
             />{" "}
           </>
         ) : (
-          <img
+          <Image
             src={galleryImages[0]}
             alt="default"
-            className="w-full h-full object-cover "
+            fill
+            className="w-full h-full object-contain "
           />
         )}
       </AspectRatio>

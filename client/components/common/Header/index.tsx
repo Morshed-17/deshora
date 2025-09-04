@@ -16,17 +16,17 @@ function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  const { data, isLoading, error } = useGetAllCategoriesQuery(undefined);
+  const { data} = useGetAllCategoriesQuery(undefined);
   return (
     <div>
-      {!scrolled && <TopHeader />} {/* TopHeader only visible at top */}
+      {!scrolled && <TopHeader />}
       <div
         className={`transition-all duration-300 ${
           scrolled ? "fixed top-0 w-full bg-white z-50 shadow-md" : ""
         }`}
       >
         <MiddleHeader data={data?.data} />
-        <BottomHeader data={data?.data} />
+        {!scrolled && <BottomHeader data={data?.data} />}
       </div>
     </div>
   );

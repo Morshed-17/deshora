@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import MainBanner from "./login/MainBanner";
+import MainBanner from "./_components/MainBanner";
+import MensCollection from "./_components/MensCollection";
 import NewArrivals from "./_components/NewArrivals";
-import LogoutButtonHeader from "@/components/common/Header/TopHeader/LogoutButtonHeader";
+import SummerCollection from "./_components/SummerCollection";
+
 import TrendingCategories from "./_components/TrendingCategories";
 
 export default function Home() {
@@ -11,6 +11,8 @@ export default function Home() {
       <MainBanner />
       <TrendingCategories />
       <NewArrivals />
+      <MensCollection />
+      <SummerCollection/>
     </div>
   );
 }

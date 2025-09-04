@@ -123,15 +123,24 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: inherit;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-nunito), sans-serif;
   }
   button {
     @apply cursor-pointer;
   }
   .hoverEffect {
     @apply transition-all duration-200 ease-in-out;
+  }
+   h1, h2, h3, h4, h5, h6, button {
+    font-family: var(--font-jost), sans-serif;
+  }
+
+  p, li, span, a {
+    font-family: var(--font-nunito), sans-serif;
   }
 }
 

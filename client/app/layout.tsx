@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Jost, Nunito } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/common/Header";
 import { Providers } from "./Providers";
 import { Toaster } from "@/components/ui/sonner";
-import Footer from "@/components/common/Footer/Footer";
 
-const inter = Inter({
+export const jost = Jost({
   subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
+  weight: ["400", "500", "700"], // normal, medium, bold
+  variable: "--font-jost",
+});
+
+export const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-nunito",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable}  antialiased`}>
+      <body className={`${jost.variable} ${nunito.variable} `}>
         <Providers>
           {children}
           <Toaster position="top-right" />

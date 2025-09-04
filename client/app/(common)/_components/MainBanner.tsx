@@ -1,16 +1,13 @@
 "use client";
 import React from "react";
 import Autoplay from "embla-carousel-autoplay";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
+  
 } from "@/components/ui/carousel";
-import Link from "next/link";
+
 import Image from "next/image";
 
 function MainBanner() {
@@ -21,7 +18,7 @@ function MainBanner() {
   ];
 
   return (
-    <div>
+    <div className="">
       <Carousel
         plugins={[
           Autoplay({

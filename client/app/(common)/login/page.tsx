@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
-import LoginForm from "./components/LoginForm";
-import RegisterForm from "./components/RegisterForm";
+import LoginForm from "./_components/LoginForm";
+import RegisterForm from "./_components/RegisterForm";
 
 function LoginPage() {
   const [toggle, setToggle] = useState<"login" | "register">("login");
