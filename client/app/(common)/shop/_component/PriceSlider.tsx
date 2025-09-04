@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Slider } from "@/components/ui/slider";
 
-
 interface PriceSliderProps {
   min: number;
   max: number;
@@ -21,7 +20,6 @@ export const PriceSlider: React.FC<PriceSliderProps> = ({
 }) => {
   return (
     <div className="w-full ">
-     
       <Slider
         value={value}
         min={min}
@@ -30,6 +28,7 @@ export const PriceSlider: React.FC<PriceSliderProps> = ({
         onValueChange={onChange}
         className="w-full"
       ></Slider>
+      
     </div>
   );
 };

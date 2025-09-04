@@ -1,6 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { PriceSlider } from "./PriceSlider";
 import { ICategory } from "@/types/type";
 
@@ -24,7 +23,6 @@ export function FilterSidebar({
   priceRange,
   setPriceRange,
   resetFilters,
-  
 }: FilterSidebarProps) {
   return (
     <aside className="w-full md:w-1/4 lg:w-1/5 border rounded-xs p-4 bg-white">
@@ -62,23 +60,9 @@ export function FilterSidebar({
       </div>
 
       <div className="mt-4">
-        <div className="flex gap-2 mb-4">
-          <div>
-            <Label>Min</Label>
-            <Input
-              type="number"
-              value={priceRange[0]}
-              onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
-            />
-          </div>
-          <div>
-            <Label>Max</Label>
-            <Input
-              type="number"
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
-            />
-          </div>
+        <div className="flex justify-between mb-4 ">
+          <p>{priceRange[0]} ৳</p>
+          <p>{priceRange[1]} ৳</p>
         </div>
         <PriceSlider
           min={0}

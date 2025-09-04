@@ -19,6 +19,8 @@ export function usePagination(defaultLimit: number = 12) {
     setLimit(urlLimit);
   }, [searchParams, defaultLimit]);
 
+ 
+
   // Sync to URL
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -27,7 +29,7 @@ export function usePagination(defaultLimit: number = 12) {
     params.set("limit", String(limit));
 
     router.replace(`?${params.toString()}`, { scroll: false });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit, router]);
 
   const nextPage = () => setPage((prev) => prev + 1);

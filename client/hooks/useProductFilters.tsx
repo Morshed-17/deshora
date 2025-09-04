@@ -1,6 +1,6 @@
 // hooks/useProductFilters.ts
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export type SortOption =
@@ -26,7 +26,37 @@ export function useProductFilters() {
 
   const searchTerm = searchParams.get("searchTerm") || "";
 
-  // Sync to URL
+  const prevFiltersRef = useRef({
+    stockFilter,
+    priceRange,
+    sortBy,
+    selectedCategories,
+  });
+
+  // Reset page when any filter changes
+  useEffect(() => {
+    const prev = prevFiltersRef.current;
+    
+    const hasChanged =
+      prev.stockFilter !== stockFilter ||
+      prev.sortBy !== sortBy ||
+      prev.priceRange[0] !== priceRange[0] ||
+      prev.priceRange[1] !== priceRange[1] ||
+      prev.selectedCategories.join(",") !== selectedCategories.join(",");
+
+    if (hasChanged) {
+      setPage(1);
+    }
+
+    prevFiltersRef.current = {
+      stockFilter,
+      priceRange,
+      sortBy,
+      selectedCategories,
+    };
+  }, [stockFilter, priceRange, sortBy, selectedCategories]);
+
+  // Sync filters to URL
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -61,7 +91,7 @@ export function useProductFilters() {
       Number(searchParams.get("max") || 100000),
     ]);
     setStockFilter((searchParams.get("stock") as StockFilter) || "");
-    setPage(Number(searchParams.get("page") ));
+    setPage(Number(searchParams.get("page")));
     setLimit(Number(searchParams.get("limit")));
   }, [searchParams]);
 

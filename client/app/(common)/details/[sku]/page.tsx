@@ -22,7 +22,7 @@ import { ShoppingBag } from "lucide-react";
 import DeliveryReturnPopup from "./_component/DeliveryAndReturnPopup";
 import SizeGuidePopup from "./_component/SizeGuidePopup";
 import { useAppDispatch } from "@/redux/hooks";
-import { addtoCart, clearCart } from "@/redux/features/cart/cartSlice";
+import { addtoCart } from "@/redux/features/cart/cartSlice";
 
 export default function ProductDetailsPage() {
   const dispatch = useAppDispatch();
@@ -30,6 +30,8 @@ export default function ProductDetailsPage() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const { sku } = useParams<{ sku: string }>();
   const { data, isLoading, error } = useGetSingleProductBySkuQuery(sku);
+
+  const [stock, setStock] = useState(true);
 
   if (isLoading) return <p>Loading product...</p>;
   if (error) return <p>Failed to load product.</p>;
@@ -56,7 +58,6 @@ export default function ProductDetailsPage() {
         size,
       })
     );
-    // dispatch(clearCart())
   };
 
   return (
@@ -85,15 +86,19 @@ export default function ProductDetailsPage() {
             Color: <span className=" ">{product.color}</span>
           </p>
 
-          <div className="flex items-baseline">
-            <span className="font-semibold">Size: </span>{" "}
+          <div className="flex items-baseline flex-col">
+            {!stock && <span className="text-destructive">Out Of Stock</span>}
+            <span className="font-semibold">Select Size: </span>{" "}
             <div className="px-3 py-1 rounded flex flex-wrap gap-2">
               {product.sizesAvailable?.length > 0 &&
                 product.sizesAvailable?.map((item, index) =>
                   item.stock === 0 ? (
                     <Button
-                      onClick={() => toast.error("Size out of stock 🥲")}
-                      className="bg-primary"
+                      onClick={() => {
+                        setStock(false);
+                        setSelectedSize("");
+                      }}
+                      className="bg-primary/70"
                       key={index}
                     >
                       {item.size}
@@ -102,7 +107,10 @@ export default function ProductDetailsPage() {
                     <Button
                       variant={"outline"}
                       key={index}
-                      onClick={() => setSelectedSize(item.size)}
+                      onClick={() => {
+                        setSelectedSize(item.size);
+                        setStock(true);
+                      }}
                       className={cn(
                         "hover:bg-foreground hover:text-white",
                         selectedSize === item.size &&
