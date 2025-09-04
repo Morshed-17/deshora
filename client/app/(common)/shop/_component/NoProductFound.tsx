@@ -1,5 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 
 import React from "react";
 
@@ -24,7 +26,7 @@ function NoProductFound() {
         <div className="flex gap-3 mt-4">
           <Button
             variant="outline"
-            onClick={() => (window.location.href = "/shop")}
+            onClick={() => redirect("/shop")}
           >
             Reset Filters
           </Button>

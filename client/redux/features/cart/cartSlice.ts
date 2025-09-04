@@ -1,4 +1,4 @@
-import { TUser } from "@/types/type";
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
@@ -61,6 +61,8 @@ const cartSlice = createSlice({
 
       state.totalQuantity += quantity;
       state.totalPrice += price * quantity;
+
+      toast.success("Added to Bag")
     },
     increaseQuantity: (state, action) => {
       const { _id, size } = action.payload;
