@@ -22,18 +22,18 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
     onChange?.(sizes);
   }, [sizes, onChange]);
 
-
   const addSize = () => setSizes([...sizes, { size: "", stock: 0 }]);
 
-  const updateSize = (
-    index: number,
-    field: keyof SizeType,
-    val: string | number
-  ) => {
+  const updateSize = (index: number, field: keyof SizeType, val: string) => {
     const newSizes = [...sizes];
 
-    newSizes[index][field] =
-      field === "stock" ? (Number(val) as never) : (String(val) as never);
+    if (field === "stock") {
+      // allow empty string in input
+      newSizes[index][field] = val === "" ? ("" as any) : Number(val);
+    } else {
+      newSizes[index][field] = val as any;
+    }
+
     setSizes(newSizes);
   };
 
@@ -44,15 +44,15 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
   return (
     <div>
       <label className="font-semibold mb-2 block">Sizes & Stock</label>
-      {sizes.map((s, i) => (
-        <div key={i} className="flex gap-2 mb-2 items-center ">
+      {sizes.map((sizeData, index) => (
+        <div key={index} className="flex gap-2 mb-2 items-center ">
           <FormItem>
             <FormLabel>Size</FormLabel>
             <FormControl>
               <Input
                 placeholder="Size (e.g. M, L, 42)"
-                value={s.size}
-                onChange={(e) => updateSize(i, "size", e.target.value)}
+                value={sizeData.size}
+                onChange={(e) => updateSize(index, "size", e.target.value)}
               />
             </FormControl>
           </FormItem>
@@ -63,15 +63,15 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
               <Input
                 type="number"
                 placeholder="Stock"
-                value={s.stock}
-                onChange={(e) => updateSize(i, "stock", e.target.value)}
+                value={sizeData.stock === 0 ? "" : sizeData.stock} // show empty if 0
+                onChange={(e) => updateSize(index, "stock", e.target.value)}
               />
             </FormControl>
           </FormItem>
 
           <Button
             variant="ghost"
-            onClick={() => removeSize(i)}
+            onClick={() => removeSize(index)}
             className="mt-5"
             type="button"
           >
@@ -80,7 +80,12 @@ export default function SizesForm({ value = [], onChange }: SizesFormProps) {
         </div>
       ))}
 
-      <Button onClick={addSize} className="mt-2" variant={"secondary"} type="button">
+      <Button
+        onClick={addSize}
+        className="mt-2"
+        variant={"secondary"}
+        type="button"
+      >
         + Add Size
       </Button>
     </div>

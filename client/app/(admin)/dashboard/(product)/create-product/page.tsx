@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
+  
   FormField,
   FormItem,
   FormLabel,
@@ -30,11 +30,11 @@ const formSchema = z.object({
   categoryIds: z.string().array().min(1, "Category is required"),
   color: z.string().optional(),
   description: z.string().optional(),
-  price: z
-    .number({ message: "Please enter price" })
+  price: z.coerce
+    .number<number>({ message: "Please enter price" })
     .positive("Price must be positive"),
   hasSizes: z.boolean(), // ✅ New field
-  stock: z.number().min(0, "Stock cannot be negative").optional(),
+  stock: z.coerce.number<number>().min(0, "Stock cannot be negative").optional(),
   sizesAvailable: z.array(
     z.object({
       size: z.string().min(1, "Size is required"),
@@ -86,7 +86,7 @@ function page() {
       .forEach((item) => formData.append("file", item.file));
 
     // Append the rest of the product data as JSON
-    const { galleryImages, ...rest } = data; // galleryImages is null for create
+    const { ...rest } = data; // galleryImages is null for create
     formData.append("data", JSON.stringify(rest));
 
     try {
@@ -167,7 +167,7 @@ function page() {
                         placeholder="Enter price"
                         {...field}
                         onChange={(e) => {
-                          field.onChange(Number(e.target.value));
+                          field.onChange(e.target.value);
                         }}
                       />
                     </FormControl>
@@ -279,7 +279,7 @@ function page() {
                           type="number"
                           {...field}
                           onChange={(e) =>
-                            field.onChange(Number(e.target.value))
+                            field.onChange(e.target.value)
                           }
                         />
                       </FormControl>

@@ -8,23 +8,13 @@ import Link from "next/link";
 import { ICategory } from "@/types/type";
 
 import { cn } from "@/lib/utils";
-import CartHover from "./CartHover";
+import CartHover from "./CartSheet";
 import { selectCart, useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { deleteItem } from "@/redux/features/cart/cartSlice";
 
 function MiddleHeader({ data }: { data: ICategory[] }) {
   const { totalQuantity, items, totalPrice } = useAppSelector(selectCart);
   const dispatch = useAppDispatch();
-  const [animate, setAnimate] = useState(false);
-
-  useEffect(() => {
-    if (totalQuantity === 0) return;
-
-    setAnimate(true);
-    const timeout = setTimeout(() => setAnimate(false), 300);
-
-    return () => clearTimeout(timeout);
-  }, [totalQuantity]);
 
   const handleDeleteItem = (_id: string, size: string) => {
     dispatch(deleteItem({ _id, size }));
@@ -62,29 +52,11 @@ function MiddleHeader({ data }: { data: ICategory[] }) {
               <sup>0</sup>
             </Link>
             <div className="flex gap-2 items-center group">
-              <Link href={"/cart"} className="flex items-center relative p-2">
-                <ShoppingCart
-                  size={20}
-                  className={cn(
-                    "text-muted-foreground",
-                    animate && "animate-bounce duration-300 text-red-500"
-                  )}
-                />
-                <div className="absolute -right-2 text-white -top-2 ">
-                  <span className="bg-primary rounded-full px-1 text-xs">
-                    {totalQuantity}
-                  </span>
-                </div>
-              </Link>
               <CartHover
                 deleteItem={handleDeleteItem}
                 items={items}
                 totalQuantity={totalQuantity}
                 totalPrice={totalPrice}
-                className="absolute right-15 top-10 z-50 bg-white opacity-0 scale-95 
-               group-hover:opacity-100  
-               transition-all duration-300
-               pointer-events-none group-hover:pointer-events-auto shadow-lg "
               />
             </div>
           </div>

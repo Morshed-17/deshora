@@ -2,16 +2,9 @@
 import PageTitle from "@/components/dashboard/PageTitle";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/Container";
-import CustomInput from "@/components/ui/custom-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
   clearCart,
   decreaseQuantity,
@@ -20,20 +13,20 @@ import {
 } from "@/redux/features/cart/cartSlice";
 import { selectCart, useAppSelector } from "@/redux/hooks";
 import { ShoppingBag, Trash } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
-function page() {
-  const { totalQuantity, items, totalPrice } = useAppSelector(selectCart);
+function CartPage() {
+  const { totalQuantity, items, totalPrice, total } =
+    useAppSelector(selectCart);
   const dispatch = useDispatch();
 
-  const vat = totalPrice * (5 / 100);
   const discount = 0;
 
   // Delete cart item
-
   const handleDeleteItem = (_id: string, size: string | undefined) => {
     dispatch(deleteItem({ _id, size }));
     toast.success("Item removed from cart");
@@ -57,33 +50,40 @@ function page() {
 
   return (
     <Container className="min-h-screen">
-      <div className="flex items-center justify-between">
-        <PageTitle className="flex items-center gap-1 uppercase">
-          <ShoppingBag /> Your Bag{" "} ({totalQuantity})
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <PageTitle className="flex items-center gap-1 uppercase text-lg sm:text-xl">
+          <ShoppingBag /> Your Bag ({totalQuantity})
         </PageTitle>
         <Button
           onClick={() => dispatch(clearCart())}
           variant={"ghost"}
-          className="underline"
+          className="underline text-sm sm:text-base self-start sm:self-auto"
         >
-          X Remove All Items{" "}
+          X Remove All Items
         </Button>
       </div>
-      <div className="flex gap-3 mt-3">
-        <div className="flex-2/3  ">
+
+      <div className="flex flex-col lg:flex-row gap-6 mt-6">
+        {/* Cart Items */}
+        <div className="flex-1">
           {items?.length > 0 ? (
             <div className="space-y-4">
-              {/* Cart Item */}
               {items?.map((item, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 border">
-                  <img
-                    src={item.image}
+                <div
+                  key={index}
+                  className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-md"
+                >
+                  <Image
+                    src={item.image || ""}
                     alt={item.title}
-                    className="w-16 h-20 object-cover"
+                    width={64}
+                    height={80}
+                    className="object-cover mx-auto sm:mx-0"
                   />
-
-                  <div className="flex-1">
-                    <h3 className="text-lg font-medium">{item.title}</h3>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="text-base sm:text-lg font-medium">
+                      {item.title}
+                    </h3>
                     <p className="text-sm text-gray-500">
                       Size: {item.size} | Color: {item.color}
                     </p>
@@ -93,7 +93,7 @@ function page() {
                   </div>
 
                   {/* Quantity Controls */}
-                  <div className="flex items-center border ">
+                  <div className="flex items-center border rounded-md self-center">
                     <button
                       onClick={() =>
                         handleDecreaseQuantity(
@@ -111,7 +111,7 @@ function page() {
                       onClick={() =>
                         handleIncreaseQuantity(item._id, item.size)
                       }
-                      className="px-3 py-1 text-lg hover:bg-gray-100 "
+                      className="px-3 py-1 text-lg hover:bg-gray-100"
                     >
                       +
                     </button>
@@ -120,16 +120,16 @@ function page() {
                   {/* Remove Button */}
                   <button
                     onClick={() => handleDeleteItem(item._id, item.size || "")}
-                    className="ml-4 text-red-500 hover:text-red-700 font-semibold"
+                    className="ml-0 sm:ml-4 text-red-500 hover:text-red-700 font-semibold self-center"
                   >
-                    <Trash />
+                    <Trash className="w-5 h-5" />
                   </button>
                 </div>
               ))}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[300px] text-center space-y-4">
-              <h3 className="text-xl font-semibold text-gray-700">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700">
                 Your Bag Is Empty! 🥲
               </h3>
               <Link href="/shop">
@@ -141,24 +141,26 @@ function page() {
           )}
         </div>
 
-        <div className="flex-1/3 ">
-          <div className="bg-secondary/5 roundedsm p-6 flex flex-col gap-3">
-            {/* Cupon code area */}
-            <Label className=" text-base uppercase">Use Cupon Code</Label>
-            <div className="flex h-12 gap-3 ">
+        {/* Cart Summary */}
+        <div className="w-full lg:w-1/3">
+          <div className="bg-secondary/5 rounded-md p-6 flex flex-col gap-4">
+            {/* Coupon code area */}
+            <Label className="text-sm sm:text-base uppercase">
+              Use Coupon Code
+            </Label>
+            <div className="flex flex-col sm:flex-row h-auto sm:h-12 gap-3">
               <Input
-                placeholder="Cupon Code"
-                className="h-full bg-white rounded-sm"
+                placeholder="Coupon Code"
+                className="bg-white rounded-sm flex-1 h-full"
               />
-              <Button className="bg-secondary h-full rounded-sm">
-                Apply Cupon
+              <Button className="bg-secondary h-12 rounded-sm w-full sm:w-auto">
+                Apply
               </Button>
             </div>
 
             {/* Total table */}
-
             <Table>
-              <TableBody className="bg-white text-muted-foreground text-base  rounded-sm ">
+              <TableBody className="bg-white text-gray-700 text-sm sm:text-base rounded-sm">
                 <TableRow>
                   <TableCell className="font-semibold p-3 border">
                     Sub-Total
@@ -172,15 +174,7 @@ function page() {
                     Discount
                   </TableCell>
                   <TableCell className="font-medium p-3 border">
-                    0 BDT
-                  </TableCell>
-                </TableRow>
-                <TableRow className="bg-gray-50">
-                  <TableCell className="font-semibold p-3 border">
-                    VAT (5%)
-                  </TableCell>
-                  <TableCell className="font-medium p-3 border">
-                    {vat} BDT
+                    {discount} BDT
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -188,21 +182,21 @@ function page() {
                     Total
                   </TableCell>
                   <TableCell className="font-medium p-3 border">
-                    {vat + totalPrice - discount} BDT
+                    {total} BDT
                   </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
 
-            {/* Checkout button */}
-            <div className="flex gap-3 h-12 ">
+            {/* Checkout buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
               <Link href={"/shop"} className="flex-1">
-                <Button className=" bg-secondary w-full h-full uppercase text-base">
+                <Button className="bg-secondary w-full h-12 uppercase text-sm sm:text-base">
                   Continue Shopping
                 </Button>
               </Link>
               <Link href={"/checkout"} className="flex-1">
-                <Button className=" bg-primary w-full h-full uppercase text-base hover:bg-secondary">
+                <Button className="bg-primary w-full h-12 uppercase text-sm sm:text-base hover:bg-secondary">
                   Checkout
                 </Button>
               </Link>
@@ -214,4 +208,4 @@ function page() {
   );
 }
 
-export default page;
+export default CartPage;

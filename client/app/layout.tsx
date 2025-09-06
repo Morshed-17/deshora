@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Jost, Nunito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./Providers";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 export const jost = Jost({
   subsets: ["latin"],
@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className={`${jost.variable} ${nunito.variable} `}>
         <Providers>
           {children}
-          <Toaster position="top-right" />
+          <Toaster position="bottom-right" />
         </Providers>
       </body>
     </html>

@@ -1,4 +1,4 @@
-
+import { TDeliveryZone } from "@/types/type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
@@ -17,12 +17,28 @@ interface ICartState {
   items: ICartItem[];
   totalQuantity: number;
   totalPrice: number;
+  deliveryZone: TDeliveryZone;
+  paymentMethod: "COD",
+  total: number;
 }
 
 const initialState: ICartState = {
   items: [],
   totalQuantity: 0,
   totalPrice: 0,
+  deliveryZone: "inside-dhaka",
+  paymentMethod: "COD",
+  total: 0,
+};
+
+// 🔹 Helper function to keep total in sync
+const calculateTotal = (state: ICartState) => {
+  if (state.items.length === 0) {
+    state.total = 0;
+  } else {
+    const deliveryCharge = state.deliveryZone === "inside-dhaka" ? 80 : 130;
+    state.total = state.totalPrice + deliveryCharge;
+  }
 };
 
 const cartSlice = createSlice({
@@ -30,16 +46,9 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addtoCart: (state, action: PayloadAction<ICartItem>) => {
-      const {
-        _id,
-        title,
-        price,
-        size,
-        image,
-        color,
-        quantity = 1,
-        sku,
-      } = action.payload;
+      const { _id, title, price, size, image, color, quantity = 1, sku } =
+        action.payload;
+
       const existing = state.items.find(
         (item) => item._id === _id && item.size === size
       );
@@ -62,45 +71,50 @@ const cartSlice = createSlice({
       state.totalQuantity += quantity;
       state.totalPrice += price * quantity;
 
-      toast.success("Added to Bag")
+      calculateTotal(state);
+
+      toast.success("Added to Bag");
     },
+
+    changeDeliveryZone: (
+      state,
+      action: PayloadAction<"inside-dhaka" | "outside-dhaka">
+    ) => {
+      state.deliveryZone = action.payload;
+      calculateTotal(state);
+    },
+
     increaseQuantity: (state, action) => {
       const { _id, size } = action.payload;
 
-      const itemToIncreaseQuantity = state.items.find(
+      const item = state.items.find(
         (item) => item._id === _id && item.size === size
       );
 
-      const indexOfTheItem = state.items.indexOf(itemToIncreaseQuantity!);
-
-      state.items[indexOfTheItem] = {
-        ...itemToIncreaseQuantity!,
-        quantity: itemToIncreaseQuantity!.quantity + 1,
-      };
-
-      state.totalQuantity += 1;
-
-      state.totalPrice += itemToIncreaseQuantity!.price;
+      if (item) {
+        item.quantity += 1;
+        state.totalQuantity += 1;
+        state.totalPrice += item.price;
+        calculateTotal(state);
+      }
     },
 
     decreaseQuantity: (state, action) => {
       const { _id, size } = action.payload;
 
-      const itemToDecreaseQuantity = state.items.find(
+      const item = state.items.find(
         (item) => item._id === _id && item.size === size
       );
 
-      const indexOfTheItem = state.items.indexOf(itemToDecreaseQuantity!);
-
-      if (itemToDecreaseQuantity?.quantity === 1) {
-        console.log("Quantity can't be less than 1");
-      } else {
-        state.items[indexOfTheItem] = {
-          ...itemToDecreaseQuantity!,
-          quantity: itemToDecreaseQuantity!.quantity - 1,
-        };
-        state.totalQuantity -= 1;
-        state.totalPrice -= itemToDecreaseQuantity!.price;
+      if (item) {
+        if (item.quantity > 1) {
+          item.quantity -= 1;
+          state.totalQuantity -= 1;
+          state.totalPrice -= item.price;
+          calculateTotal(state);
+        } else {
+          console.log("Quantity can't be less than 1");
+        }
       }
     },
 
@@ -115,8 +129,11 @@ const cartSlice = createSlice({
         state.items = state.items.filter(
           (item) => !(item._id === _id && item.size === size)
         );
+
         state.totalPrice -= itemToRemove.price * itemToRemove.quantity;
         state.totalQuantity -= itemToRemove.quantity;
+
+        calculateTotal(state);
       }
     },
 
@@ -124,6 +141,7 @@ const cartSlice = createSlice({
       state.items = [];
       state.totalQuantity = 0;
       state.totalPrice = 0;
+      state.total = 0;
     },
   },
 });
@@ -134,6 +152,7 @@ export const {
   deleteItem,
   increaseQuantity,
   decreaseQuantity,
+  changeDeliveryZone,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

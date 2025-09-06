@@ -25,6 +25,9 @@ export interface ICategory {
   __v: number;
   _id: string;
 }
+
+export type TDeliveryZone = "inside-dhaka" | "outside-dhaka"
+
 export interface TSize {
   size: string;
   stock: number;
