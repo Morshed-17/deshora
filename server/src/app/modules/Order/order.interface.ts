@@ -9,7 +9,7 @@ export interface TOrderItem {
   discount: number;
   quantity: number;
   color: string;
-  size?: string; // optional if product has sizes
+  size: string | null; // optional if product has sizes
 }
 
 export interface TGuestInfo {

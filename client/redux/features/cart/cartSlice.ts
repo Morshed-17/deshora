@@ -9,7 +9,7 @@ export interface ICartItem {
   sku: string;
   quantity: number;
   color: string;
-  size?: string;
+  size?: string ;
   image?: string;
 }
 

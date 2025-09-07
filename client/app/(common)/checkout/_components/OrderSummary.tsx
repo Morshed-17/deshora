@@ -10,7 +10,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ICartItem } from "@/redux/features/cart/cartSlice";
 import { TDeliveryZone } from "@/types/type";
-import { CheckCircle, MousePointer, Phone, ShoppingCart, Truck } from "lucide-react";
+import {
+  CheckCircle,
+  Loader2,
+  MousePointer,
+  Phone,
+  ShoppingCart,
+  Truck,
+} from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -20,10 +27,12 @@ interface OrderSummaryProps {
   totalQuantity: number;
   deliveryZone: TDeliveryZone;
   total: number;
+  isLoading: boolean;
 }
 
 function OrderSummary({
   items,
+  isLoading,
   totalPrice,
   totalQuantity,
   deliveryZone,
@@ -101,11 +110,19 @@ function OrderSummary({
 
           {/* Checkout Button */}
           <Button
-           
             className="w-full mt-6 h-12 text-base font-semibold uppercase"
             size="lg"
+            disabled={isLoading}
           >
-            Confirm Order <MousePointer/>
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin size-6"></Loader2> Ordering...
+              </>
+            ) : (
+              <>
+                Confirm Order <MousePointer />
+              </>
+            )}
           </Button>
 
           {/* Trust Badges */}

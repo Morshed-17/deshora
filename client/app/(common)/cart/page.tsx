@@ -49,7 +49,7 @@ function CartPage() {
   };
 
   return (
-    <Container className="min-h-screen">
+    <Container className="min-h-screen my-6 md:my-12">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <PageTitle className="flex items-center gap-1 uppercase text-lg sm:text-xl">
           <ShoppingBag /> Your Bag ({totalQuantity})

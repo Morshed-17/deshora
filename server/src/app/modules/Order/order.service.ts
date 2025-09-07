@@ -67,7 +67,7 @@ const createOrder = async (payload: Partial<TOrder>) => {
           price: product.price,
           discount: 0,
           quantity: item.quantity,
-          size: item.size,
+          size: item.size || null,
         };
       })
     );

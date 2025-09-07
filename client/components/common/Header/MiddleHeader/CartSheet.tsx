@@ -11,6 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 
 function CartSheet({
@@ -39,7 +40,10 @@ function CartSheet({
         </div>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0">
+      <SheetContent
+        side="right"
+        className="w-[400px] sm:w-[450px] flex flex-col p-0"
+      >
         {/* Header */}
         <SheetHeader className="border-b px-4 py-3">
           <SheetTitle className="text-lg font-semibold">
@@ -48,7 +52,12 @@ function CartSheet({
         </SheetHeader>
 
         {/* Items */}
-        <div className={cn("flex-1 overflow-y-auto px-4 py-4 space-y-3", className)}>
+        <div
+          className={cn(
+            "flex-1 overflow-y-auto px-4 py-4 space-y-3",
+            className
+          )}
+        >
           {items?.length > 0 ? (
             items.map((product, index) => (
               <div
@@ -103,14 +112,19 @@ function CartSheet({
               <p className="text-primary">৳ {totalPrice}</p>
             </div>
             <div className="flex gap-3">
-              <Link href="/cart" className="flex-1">
-                <Button variant="outline" className="w-full">
-                  View Bag
-                </Button>
-              </Link>
-              <Link href="/checkout" className="flex-1">
-                <Button className="w-full">Checkout</Button>
-              </Link>
+              <SheetClose asChild>
+                <Link href="/cart" className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    View Bag
+                  </Button>
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <Link href="/checkout" className="flex-1">
+                  <Button className="w-full">Checkout</Button>
+                </Link>
+              </SheetClose>
             </div>
           </div>
         )}

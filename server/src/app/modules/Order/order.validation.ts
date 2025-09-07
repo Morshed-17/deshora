@@ -16,7 +16,9 @@ export const createOrderSchema = z.object({
     guestInfo: z.object({
       name: z.string("guest name is required"),
       email: z.string().email().optional(),
-      phone: z.number().min(11).max(11),
+      phone: z
+        .string()
+        .regex(/^01[0-9]{9}$/, "Invalid Bangladeshi phone number"),
     }),
   }),
 });

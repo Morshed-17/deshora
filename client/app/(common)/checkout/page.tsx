@@ -1,5 +1,11 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,11 +27,15 @@ import { selectCart, useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import OrderSummary from "./_components/OrderSummary";
 
-import { changeDeliveryZone } from "@/redux/features/cart/cartSlice";
+import { changeDeliveryZone, clearCart } from "@/redux/features/cart/cartSlice";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useCreateOrderMutation } from "@/redux/features/order/orderApi";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 
 const formSchema = z.object({
   name: z
@@ -49,6 +59,10 @@ const CheckoutPage = () => {
     paymentMethod,
   } = useAppSelector(selectCart);
 
+  const [createOrder, { isLoading, isSuccess }] = useCreateOrderMutation();
+
+  const router = useRouter();
+
   const dispatch = useAppDispatch();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,8 +74,59 @@ const CheckoutPage = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const products = items.map((item) => ({
+    product: item._id,
+    size: item.size,
+    quantity: item.quantity,
+  }));
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const result = await createOrder({
+      items: products,
+      deliveryAddress: values.address,
+      deliveryZone: deliveryZone,
+      guestInfo: {
+        email: values.email,
+        name: values.name,
+        phone: values.phone.trim(),
+      },
+    }).unwrap();
+
+    console.log(result);
+
+    if (result.success) {
+      toast.success("Orderd");
+    } else {
+      return toast.error("Something went wrong");
+    }
+
+    router.push(`/thank-you/${result?.data.id}`);
+    dispatch(clearCart());
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Card className="relative w-full h-full max-w-xs">
+          <CardHeader className="text-center">
+            <CardTitle>Your Bag is Empty 🥲</CardTitle>
+            <CardDescription>
+              Please add some products in your bag before checkout
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href={"/shop"}
+              className={buttonVariants({
+                className: "w-full",
+              })}
+            >
+              Add Products
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -244,6 +309,7 @@ const CheckoutPage = () => {
                 totalQuantity={totalQuantity}
                 totalPrice={totalPrice}
                 total={total}
+                isLoading={isLoading}
               />
             </div>
           </form>

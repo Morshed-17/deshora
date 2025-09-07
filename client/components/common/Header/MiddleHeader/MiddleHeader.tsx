@@ -1,13 +1,12 @@
 import Container from "@/components/ui/Container";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Logo from "./Logo";
 import SearchWithCategory from "./SearchWithCategory";
-import { Heart, MenuIcon, Phone, SearchIcon, ShoppingCart } from "lucide-react";
+import { Heart, MenuIcon, Phone, SearchIcon } from "lucide-react";
 import Link from "next/link";
 
 import { ICategory } from "@/types/type";
 
-import { cn } from "@/lib/utils";
 import CartHover from "./CartSheet";
 import { selectCart, useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { deleteItem } from "@/redux/features/cart/cartSlice";
